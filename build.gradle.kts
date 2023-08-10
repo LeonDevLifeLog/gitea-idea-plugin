@@ -19,6 +19,12 @@ version = properties("pluginVersion").get()
 
 // Configure project's dependencies
 repositories {
+    maven {
+        url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+    }
+    maven {
+        url = uri("https://jitpack.io")
+    }
     mavenCentral()
 }
 
@@ -26,6 +32,8 @@ repositories {
 dependencies {
     implementation(libs.annotations)
     implementation(compose.desktop.currentOs)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("org.codeberg.gitnex:tea4j-autodeploy:0be0b407b2")
 }
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
@@ -94,9 +102,7 @@ tasks {
         changeNotes = properties("pluginVersion").map { pluginVersion ->
             with(changelog) {
                 renderItem(
-                    (getOrNull(pluginVersion) ?: getUnreleased())
-                        .withHeader(false)
-                        .withEmptySections(false),
+                    (getOrNull(pluginVersion) ?: getUnreleased()).withHeader(false).withEmptySections(false),
                     Changelog.OutputType.HTML,
                 )
             }

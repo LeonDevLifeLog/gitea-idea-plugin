@@ -1,4 +1,4 @@
-package com.github.leondevlifelog.giteaideaplugin.ui
+package com.github.leondevlifelog.gitea.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
