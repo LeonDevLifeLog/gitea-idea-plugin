@@ -1,16 +1,15 @@
 package com.github.leondevlifelog.giteaideaplugin.toolWindow
 
+import androidx.compose.ui.awt.ComposePanel
+import com.github.leondevlifelog.giteaideaplugin.MyBundle
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.leondevlifelog.giteaideaplugin.MyBundle
 import com.github.leondevlifelog.giteaideaplugin.services.MyProjectService
-import javax.swing.JButton
+import com.github.leondevlifelog.giteaideaplugin.ui.Welcome
 
 
 class MyToolWindowFactory : ToolWindowFactory {
@@ -21,8 +20,12 @@ class MyToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val myToolWindow = MyToolWindow(toolWindow)
-        val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
-        toolWindow.contentManager.addContent(content)
+        val prContent =
+            ContentFactory.getInstance().createContent(myToolWindow.getContent(), MyBundle.message("pr"), false)
+        toolWindow.contentManager.addContent(prContent)
+        val issueContent =
+            ContentFactory.getInstance().createContent(myToolWindow.getContent(), MyBundle.message("issue"), false)
+        toolWindow.contentManager.addContent(issueContent)
     }
 
     override fun shouldBeAvailable(project: Project) = true
@@ -31,15 +34,12 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         private val service = toolWindow.project.service<MyProjectService>()
 
-        fun getContent() = JBPanel<JBPanel<*>>().apply {
-            val label = JBLabel(MyBundle.message("randomLabel", "?"))
-
-            add(label)
-            add(JButton(MyBundle.message("shuffle")).apply {
-                addActionListener {
-                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+        fun getContent(): ComposePanel {
+            return ComposePanel().apply {
+                setContent {
+                    Welcome()
                 }
-            })
+            }
         }
     }
 }
