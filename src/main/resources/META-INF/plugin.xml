@@ -12,11 +12,12 @@
         <tasks.repositoryType implementation="com.github.leondevlifelog.gitea.tasks.GiteaRepositoryType" />
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.leondevlifelog.gitea.toolWindow.MyToolWindowFactory" id="Gitea" />
+        <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea"
+            factoryClass="com.github.leondevlifelog.gitea.ui.MyToolWindowFactory" id="Gitea" />
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.leondevlifelog.gitea.listeners.MyApplicationActivationListener"
+        <listener class="com.github.leondevlifelog.gitea.listeners.GiteaActivationListener"
             topic="com.intellij.openapi.application.ApplicationActivationListener" />
     </applicationListeners>
 </idea-plugin>

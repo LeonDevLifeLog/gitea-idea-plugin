@@ -1,17 +1,21 @@
 package com.github.leondevlifelog.gitea.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.onClick
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import com.github.leondevlifelog.gitea.GiteaBundle
 
-@OptIn(ExperimentalFoundationApi::class)
+/**
+ * Welcome panel
+ * @author Leon
+ */
 @Composable
 fun Welcome() {
     Surface(
@@ -19,10 +23,7 @@ fun Welcome() {
     ) {
         Box(contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                var count by remember { mutableStateOf(0) }
-                Text("Count: $count")
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(modifier = Modifier.onClick { count += 1 }, text = "Hello JetBrains!")
+                Text(GiteaBundle.message("coming.soon"))
             }
         }
     }

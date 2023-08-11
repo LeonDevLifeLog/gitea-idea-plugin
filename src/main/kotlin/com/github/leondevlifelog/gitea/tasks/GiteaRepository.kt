@@ -12,6 +12,10 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.utils.URIBuilder
 import org.gitnex.tea4j.v2.models.Issue
 
+/**
+ * Gitea Task Repo
+ * @author Leon
+ */
 @Tag("Gitea")
 class GiteaRepository : NewBaseRepositoryImpl {
 

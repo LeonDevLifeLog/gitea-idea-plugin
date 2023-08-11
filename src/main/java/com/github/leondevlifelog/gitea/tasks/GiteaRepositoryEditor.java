@@ -114,13 +114,6 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
         myRepository.setAssigned(isAssignedIssuesOnly());
     }
 
-    private void generateToken() {
-        String token = GiteaRepositoryEditorKt.INSTANCE.askToken(myProject, getHost());
-        if (token != null) {
-            myToken.setText(token);
-        }
-    }
-
     @Override
     public void setAnchor(@Nullable final JComponent anchor) {
         super.setAnchor(anchor);

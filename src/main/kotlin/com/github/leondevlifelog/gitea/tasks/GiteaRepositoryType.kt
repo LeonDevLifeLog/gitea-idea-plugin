@@ -1,9 +1,8 @@
 package com.github.leondevlifelog.gitea.tasks
 
 import com.github.leondevlifelog.gitea.GiteaConfig
-import com.intellij.icons.AllIcons
+import com.github.leondevlifelog.gitea.icons.GiteaIcons
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.IconLoader
 import com.intellij.tasks.TaskRepository
 import com.intellij.tasks.config.TaskRepositoryEditor
 import com.intellij.tasks.impl.BaseRepositoryType
@@ -16,7 +15,7 @@ class GiteaRepositoryType : BaseRepositoryType<GiteaRepository>() {
     }
 
     override fun getIcon(): Icon {
-        return IconLoader.getIcon("resources/icons/gitea.svg", GiteaRepositoryType::class.java)
+        return GiteaIcons.Gitea
     }
 
     override fun createEditor(
