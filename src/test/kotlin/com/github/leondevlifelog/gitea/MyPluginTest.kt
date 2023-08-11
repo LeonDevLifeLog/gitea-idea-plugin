@@ -7,6 +7,7 @@ import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.PsiErrorElementUtil
 import com.github.leondevlifelog.gitea.services.GiteaService
+import junit.framework.TestCase
 
 @TestDataPath("\$CONTENT_ROOT/src/test/testData")
 class MyPluginTest : BasePlatformTestCase() {
@@ -32,7 +33,7 @@ class MyPluginTest : BasePlatformTestCase() {
     fun testProjectService() {
         val projectService = project.service<GiteaService>()
 
-        assertNotSame(projectService.getRandomNumber(), projectService.getRandomNumber())
+        TestCase.assertSame(GiteaService::class.java, projectService::class.java)
     }
 
     override fun getTestDataPath() = "src/test/testData/rename"
