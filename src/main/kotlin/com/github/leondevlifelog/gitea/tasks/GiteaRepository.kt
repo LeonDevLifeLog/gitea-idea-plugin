@@ -30,6 +30,8 @@ class GiteaRepository : NewBaseRepositoryImpl {
 
     var assigned = false
 
+    var skipSSLVerify = false
+
     companion object {
         private val GSON: Gson = TaskGsonUtil.createDefaultBuilder().create()
         private val LIST_OF_ISSUES_TYPE: TypeToken<List<Issue>> = object : TypeToken<List<Issue>>() {}
@@ -47,26 +49,25 @@ class GiteaRepository : NewBaseRepositoryImpl {
 
     override fun findTask(id: String): Task? {
         val issue = httpClient.execute(
-            HttpGet(),
-            TaskResponseUtil.GsonSingleObjectDeserializer<Issue>(GSON, Issue::class.java)
+            HttpGet(), TaskResponseUtil.GsonSingleObjectDeserializer<Issue>(GSON, Issue::class.java)
         )
         return GiteaTask(this, issue)
     }
 
     override fun createCancellableConnection(): CancellableConnection? {
-        return HttpTestConnection(HttpGet(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")))
+        val issueListApi = getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")
+        val url = URIBuilder(issueListApi).addParameter("access_token", password).build()
+        val httpGet = HttpGet(url)
+        return HttpTestConnection(httpGet)
     }
 
     override fun getIssues(query: String?, offset: Int, limit: Int, withClosed: Boolean): Array<Task> {
-        val uri = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues"))
-            .addParameter("q", query)
-            .addParameter("page", ((offset / limit) + 1).toString())
-            .addParameter("limit", limit.toString())
-            .build()
+        val uri = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")).addParameter("q", query)
+            .addParameter("assigned", assigned.toString()).addParameter("page", ((offset / limit) + 1).toString())
+            .addParameter("limit", limit.toString()).build()
         val httpGet = HttpGet(uri)
         val issues = httpClient.execute(
-            httpGet,
-            TaskResponseUtil.GsonMultipleObjectsDeserializer<Issue>(GSON, LIST_OF_ISSUES_TYPE)
+            httpGet, TaskResponseUtil.GsonMultipleObjectsDeserializer<Issue>(GSON, LIST_OF_ISSUES_TYPE)
         )
         return issues.map { GiteaTask(this, it) }.toTypedArray()
     }
@@ -80,9 +81,9 @@ class GiteaRepository : NewBaseRepositoryImpl {
     }
 
     override fun isConfigured(): Boolean {
-        return super.isConfigured() && StringUtil.isNotEmpty(password)
-                && StringUtil.isNotEmpty(repoAuthor)
-                && StringUtil.isNotEmpty(repoName)
+        return super.isConfigured() && StringUtil.isNotEmpty(password) && StringUtil.isNotEmpty(repoAuthor) && StringUtil.isNotEmpty(
+            repoName
+        )
     }
 
     override fun equals(other: Any?): Boolean {
