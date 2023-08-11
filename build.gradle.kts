@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
-    id("org.jetbrains.compose") version "1.4.3"
 }
 
 group = properties("pluginGroup").get()
@@ -31,7 +30,6 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     implementation(libs.annotations)
-    implementation(compose.desktop.currentOs)
     implementation("org.codeberg.gitnex:tea4j-autodeploy:0be0b407b2")
 }
 
