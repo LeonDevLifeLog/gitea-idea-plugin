@@ -44,6 +44,10 @@ class GiteaRepository : NewBaseRepositoryImpl {
         return GiteaTask(this, issue)
     }
 
+    override fun createCancellableConnection(): CancellableConnection? {
+        return HttpTestConnection(HttpGet(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")))
+    }
+
     override fun getIssues(query: String?, offset: Int, limit: Int, withClosed: Boolean): Array<Task> {
         val uri = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues"))
             .addParameter("q", query)
