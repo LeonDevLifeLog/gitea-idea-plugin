@@ -1,1 +1,1 @@
-rootProject.name = "gitea-idea-plugin"
+rootProject.name = "gitea"

@@ -1,18 +1,29 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.leondevlifelog.giteaideaplugin</id>
-    <name>gitea-idea-plugin Template</name>
-    <vendor>leondevlifelog</vendor>
-
+    <id>com.github.leondevlifelog.gitea</id>
+    <name>Gitea</name>
+    <vendor>Leon</vendor>
+    <description><![CDATA[None Official Gitea Plugin for Jetbrains IDEs.
+Now only support Gitea task management.
+New feature coming soon:
+* Gitea Clone
+* Issue management
+* PR Management & Review
+]]></description>
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
+    <resource-bundle>messages.GiteaBundle</resource-bundle>
+    <depends>com.intellij.tasks</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.leondevlifelog.giteaideaplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <tasks.repositoryType implementation="com.github.leondevlifelog.gitea.tasks.GiteaRepositoryType" />
+    </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea"
+            factoryClass="com.github.leondevlifelog.gitea.ui.GiteaToolWindowFactory" id="Gitea" />
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.leondevlifelog.giteaideaplugin.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.github.leondevlifelog.gitea.listeners.GiteaActivationListener"
+            topic="com.intellij.openapi.application.ApplicationActivationListener" />
     </applicationListeners>
 </idea-plugin>

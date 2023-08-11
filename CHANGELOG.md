@@ -1,7 +1,9 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# gitea-idea-plugin Changelog
+# Gitea Changelog
 
-## [Unreleased]
+## Unreleased
+
 ### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+
+- Support Gitea Task(Issue) manager
