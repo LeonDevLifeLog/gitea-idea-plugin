@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023. Leon<leondevlifelog@gmail.com>. All rights reserved.
+ * SPDX-License-Identifier: MIT
+ */
+
 package com.github.leondevlifelog.gitea.tasks
 
 import com.intellij.tasks.generic.GenericTask
