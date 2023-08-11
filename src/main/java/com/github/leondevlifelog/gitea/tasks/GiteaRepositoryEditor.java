@@ -42,7 +42,7 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
         myPasswordText.setVisible(false);
         myUseHttpAuthenticationCheckBox.setVisible(false);
 
-        myRepoAuthor.setText(repository.getUserLogin());
+        myRepoAuthor.setText(repository.getRepoAuthor());
         myRepoName.setText(repository.getRepoName());
         myToken.setText(repository.getPassword());
         myShowNotAssignedIssues.setSelected(!repository.getAssigned());
@@ -108,7 +108,7 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
     public void apply() {
         super.apply();
         myRepository.setRepoName(getRepoName());
-        myRepository.setUserLogin(getRepoAuthor());
+        myRepository.setRepoAuthor(getRepoAuthor());
         myRepository.setPassword(getToken());
         myRepository.storeCredentials();
         myRepository.setAssigned(isAssignedIssuesOnly());
