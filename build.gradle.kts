@@ -18,8 +18,10 @@ version = properties("pluginVersion").get()
 
 // Configure project's dependencies
 repositories {
-    maven {
-        url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+    if (environment("CN_MIRROR").isPresent) {
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+        }
     }
     maven {
         url = uri("https://jitpack.io")
