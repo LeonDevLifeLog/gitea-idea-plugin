@@ -16,7 +16,7 @@ import com.intellij.ui.content.ContentFactory
 import com.github.leondevlifelog.gitea.services.GiteaService
 
 
-class MyToolWindowFactory : ToolWindowFactory {
+class GiteaToolWindowFactory : ToolWindowFactory {
 
     init {
         thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")

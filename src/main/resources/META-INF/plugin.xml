@@ -13,7 +13,7 @@
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea"
-            factoryClass="com.github.leondevlifelog.gitea.ui.MyToolWindowFactory" id="Gitea" />
+            factoryClass="com.github.leondevlifelog.gitea.ui.GiteaToolWindowFactory" id="Gitea" />
     </extensions>
 
     <applicationListeners>
