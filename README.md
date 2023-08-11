@@ -1,8 +1,8 @@
 # gitea-idea-plugin
 
 ![Build](https://github.com/LeonDevLifeLog/gitea-idea-plugin/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/gitea.svg)](https://plugins.jetbrains.com/plugin/gitea)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/gitea.svg)](https://plugins.jetbrains.com/plugin/gitea)
+[![Version](https://img.shields.io/jetbrains/plugin/v/22477-gitea.svg)](https://plugins.jetbrains.com/plugin/22477-gitea)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/22477-gitea.svg)](https://plugins.jetbrains.com/plugin/22477-gitea)
 
 ## Template ToDo list
 - [x] Create a new [IntelliJ Platform Plugin Template][template] project.
