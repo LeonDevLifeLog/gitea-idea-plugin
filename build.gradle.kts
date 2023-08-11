@@ -32,7 +32,6 @@ repositories {
 dependencies {
     implementation(libs.annotations)
     implementation(compose.desktop.currentOs)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("org.codeberg.gitnex:tea4j-autodeploy:0be0b407b2")
 }
 
