@@ -64,6 +64,7 @@ class GiteaRepository : NewBaseRepositoryImpl {
     override fun getIssues(query: String?, offset: Int, limit: Int, withClosed: Boolean): Array<Task> {
         val uri = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")).addParameter("q", query)
             .addParameter("assigned", assigned.toString()).addParameter("page", ((offset / limit) + 1).toString())
+            .addParameter("access_token", password)
             .addParameter("limit", limit.toString()).build()
         val httpGet = HttpGet(uri)
         val issues = httpClient.execute(
