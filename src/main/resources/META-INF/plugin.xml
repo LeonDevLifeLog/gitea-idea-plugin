@@ -18,7 +18,7 @@ New feature coming soon:
         <tasks.repositoryType implementation="com.github.leondevlifelog.gitea.tasks.GiteaRepositoryType" />
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea"
+        <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea" doNotActivateOnStart="true"
             factoryClass="com.github.leondevlifelog.gitea.ui.GiteaToolWindowFactory" id="Gitea" />
     </extensions>
 
