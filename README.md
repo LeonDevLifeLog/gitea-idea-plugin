@@ -6,16 +6,23 @@
 
 <!-- Plugin description -->
 Gitea Plugin for Jetbrains IDEs.
-only support Gitea task management for now.
+support Gitea repo clone & task management for now.
 New feature coming soon:
 
-* Gitea Clone
 * Issue management
 * PR Management & Review
 
 <!-- Plugin description end -->
 
 ## Features Preview
+
+### Gitea Repo Clone
+
+| Features Preview                    | Features Preview                    | Features Preview |
+|-------------------------------------|-------------------------------------|------------------|
+| ![Features Preview](./assets/5.png) | ![Features Preview](./assets/6.png) |                  |
+
+### Task Management
 
 | Features Preview                    | Features Preview                    | Features Preview                    |
 |-------------------------------------|-------------------------------------|-------------------------------------|

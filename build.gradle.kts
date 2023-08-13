@@ -33,6 +33,10 @@ repositories {
 dependencies {
     implementation(libs.annotations)
     implementation("org.codeberg.gitnex:tea4j-autodeploy:0be0b407b2")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
