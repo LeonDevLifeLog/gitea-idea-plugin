@@ -4,9 +4,8 @@
     <name>Gitea</name>
     <vendor>Leon</vendor>
     <description><![CDATA[None Official Gitea Plugin for Jetbrains IDEs.
-Now only support Gitea task management.
+support Gitea clone & task management.
 New feature coming soon:
-* Gitea Clone
 * Issue management
 * PR Management & Review
 ]]></description>
@@ -14,12 +13,34 @@ New feature coming soon:
 
     <resource-bundle>messages.GiteaBundle</resource-bundle>
     <depends>com.intellij.tasks</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>Git4Idea</depends>
     <extensions defaultExtensionNs="com.intellij">
         <tasks.repositoryType implementation="com.github.leondevlifelog.gitea.tasks.GiteaRepositoryType" />
-    </extensions>
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea"
+        <toolWindow icon="com.github.leondevlifelog.gitea.icons.GiteaIcons.Gitea" doNotActivateOnStart="true"
             factoryClass="com.github.leondevlifelog.gitea.ui.GiteaToolWindowFactory" id="Gitea" />
+        <openapi.vcs.ui.cloneDialog.VcsCloneDialogExtension
+            id="com.github.leondevlifelog.gitea.ui.clone.GiteaCloneDialogExtension"
+            implementation="com.github.leondevlifelog.gitea.ui.clone.GiteaCloneDialogExtension" />
+        <applicationService serviceImplementation="com.github.leondevlifelog.gitea.services.GiteaSettings" />
+        <applicationService serviceImplementation="com.github.leondevlifelog.gitea.services.CachingGiteaUserAvatarLoader" />
+
+        <projectConfigurable parentId="project.propVCSSupport.Mappings" groupWeight="-500"
+            instance="com.github.leondevlifelog.gitea.ui.GiteaSettingsConfigurable" />
+        <applicationService
+            serviceImplementation="com.github.leondevlifelog.gitea.authentication.accounts.GiteaPersistentAccounts" />
+        <projectService
+            serviceImplementation="com.github.leondevlifelog.gitea.authentication.accounts.GiteaProjectDefaultAccountHolder" />
+    </extensions>
+    <extensions defaultExtensionNs="Git4Idea">
+        <GitHttpAuthDataProvider
+            implementation="com.github.leondevlifelog.gitea.extensions.GiteaHttpAuthDataProvider" />
+
+        <gitRepositoryHostingService
+            implementation="com.github.leondevlifelog.gitea.extensions.GiteaRepositoryHostingService" />
+        <gitProtectedBranchProvider
+            implementation="com.github.leondevlifelog.gitea.extensions.GiteaProtectedBranchProvider" />
+        <gitFetchHandler implementation="com.github.leondevlifelog.gitea.extensions.GiteaProtectedBranchRulesLoader" />
     </extensions>
 
     <applicationListeners>

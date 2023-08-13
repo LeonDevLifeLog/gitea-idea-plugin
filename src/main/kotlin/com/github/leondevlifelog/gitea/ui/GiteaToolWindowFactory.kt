@@ -8,7 +8,6 @@ package com.github.leondevlifelog.gitea.ui
 import com.github.leondevlifelog.gitea.GiteaBundle
 import com.github.leondevlifelog.gitea.services.GiteaService
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.wm.ToolWindow
@@ -18,10 +17,6 @@ import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.panel
 
 class GiteaToolWindowFactory : ToolWindowFactory {
-
-    init {
-        thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
-    }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val giteaToolWindow = GiteaToolWindow(toolWindow)
@@ -46,6 +41,15 @@ class GiteaToolWindowFactory : ToolWindowFactory {
                 }
                 row {
                     label(GiteaBundle.message("feat.path")).align(Align.CENTER)
+                }
+                row {
+                    label(GiteaBundle.message("get.from.vcs.line1")).align(Align.CENTER)
+                }
+                row {
+                    label(GiteaBundle.message("get.from.vcs.line2")).align(Align.CENTER)
+                }
+                row {
+                    label(GiteaBundle.message("get.from.vcs.line3")).align(Align.CENTER)
                 }
                 row {
                     label(GiteaBundle.message("coming.soon")).align(Align.CENTER)
