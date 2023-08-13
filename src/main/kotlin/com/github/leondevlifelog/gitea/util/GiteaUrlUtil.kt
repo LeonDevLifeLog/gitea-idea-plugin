@@ -5,20 +5,20 @@
 
 package com.github.leondevlifelog.gitea.util
 
+
 import com.github.leondevlifelog.gitea.api.GiteaRepositoryPath
-import com.intellij.openapi.util.NlsSafe
+import git4idea.remote.hosting.GitHostingUrlUtil.removeProtocolPrefix
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import kotlin.math.max
 
-
-import git4idea.remote.hosting.GitHostingUrlUtil.removeProtocolPrefix
-
 object GiteaUrlUtil {
+    private const val DOT_GIT = ".git"
+
     @NotNull
-    private fun removeTrailingSlash(@NotNull s: String?): @NlsSafe String? {
-        return if (s!!.endsWith("/")) {
-            s!!.substring(0, s!!.length - 1)
+    private fun removeTrailingSlash(@NotNull s: String): String {
+        return if (s.endsWith("/")) {
+            s.substring(0, s.length - 1)
         } else s
     }
 
@@ -26,8 +26,8 @@ object GiteaUrlUtil {
      * git@xxx.com:user/repo.git -> user/repo
      */
     @Nullable
-    fun getUserAndRepositoryFromRemoteUrl(@NotNull remoteUrl: String): GiteaRepositoryPath? {
-        var remoteUrl = remoteUrl
+    fun getUserAndRepositoryFromRemoteUrl(@NotNull repoUrl: String): GiteaRepositoryPath? {
+        var remoteUrl = repoUrl
         remoteUrl = removeProtocolPrefix(removeEndingDotGit(remoteUrl))
         val index1 = remoteUrl.lastIndexOf('/')
         if (index1 == -1) {
@@ -46,12 +46,11 @@ object GiteaUrlUtil {
     }
 
     @NotNull
-    private fun removeEndingDotGit(@NotNull url: String): @NlsSafe String {
-        var url: String? = url
+    private fun removeEndingDotGit(@NotNull urlWithDot: String): String {
+        var url: String = urlWithDot
         url = removeTrailingSlash(url)
-        val DOT_GIT = ".git"
-        return if (url!!.endsWith(DOT_GIT)) {
-            url!!.substring(0, url!!.length - DOT_GIT.length)
+        return if (url.endsWith(DOT_GIT)) {
+            url.substring(0, url.length - DOT_GIT.length)
         } else url
     }
 }

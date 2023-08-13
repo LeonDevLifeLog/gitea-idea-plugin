@@ -100,6 +100,9 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
 
         other as GiteaServerPath
 
+        if (!ignoreProtocol) {
+            if (myUseHttp != other.myUseHttp) return false
+        }
         if (myHost != other.myHost) return false
         if (myPort != other.myPort) return false
 

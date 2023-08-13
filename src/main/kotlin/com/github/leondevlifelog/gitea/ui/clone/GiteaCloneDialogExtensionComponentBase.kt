@@ -20,7 +20,6 @@ import com.github.leondevlifelog.gitea.util.GiteaNotifications
 import com.github.leondevlifelog.gitea.util.GiteaUrlUtil
 import com.intellij.collaboration.async.disposingMainScope
 import com.intellij.collaboration.auth.ui.CompactAccountsPanelFactory
-import com.intellij.collaboration.messages.CollaborationToolsBundle
 import com.intellij.collaboration.ui.CollaborationToolsUIUtil
 import com.intellij.collaboration.util.CollectionDelta
 import com.intellij.dvcs.repo.ClonePathProvider
@@ -180,7 +179,7 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
                 cell(directoryField)
                     .align(AlignX.FILL)
                     .validationOnApply {
-                        CloneDvcsValidationUtils.checkDirectory(it.text, it.textField)
+                        CloneDvcsValidationUtils.checkDirectory(it.text, it)
                     }
             }
         }
@@ -191,7 +190,7 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
     private inner class ErrorHandler : GiteaRepositoryListCellRenderer.ErrorHandler {
 
         override fun getPresentableText(error: Throwable): @Nls String = when (error) {
-            is GiteaMissingTokenException -> CollaborationToolsBundle.message("account.token.missing")
+            is GiteaMissingTokenException -> GiteaBundle.message("account.token.missing")
             is GiteaAuthenticationException -> GiteaBundle.message("credentials.invalid.auth.data", error.message)
             else -> GiteaBundle.message("clone.error.load.repositories")
         }
@@ -287,12 +286,12 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
         val parent = Paths.get(directoryField.text).toAbsolutePath().parent
         val destinationValidation = CloneDvcsValidationUtils.createDestination(parent.toString())
         if (destinationValidation != null) {
-            LOG.error(CollaborationToolsBundle.message("clone.dialog.error.unable.to.create.destination.directory"),
+            LOG.error(GiteaBundle.message("clone.dialog.error.unable.to.create.destination.directory"),
                 destinationValidation.message)
             GiteaNotifications.showError(project,
                 GiteaNotificationIdsHolder.CLONE_UNABLE_TO_CREATE_DESTINATION_DIR,
-                CollaborationToolsBundle.message("clone.dialog.clone.failed"),
-                CollaborationToolsBundle.message("clone.dialog.error.unable.to.find.destination.directory"))
+                GiteaBundle.message("clone.dialog.clone.failed"),
+                GiteaBundle.message("clone.dialog.error.unable.to.find.destination.directory"))
             return
         }
 
@@ -302,11 +301,11 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
             destinationParent = lfs.refreshAndFindFileByIoFile(parent.toFile())
         }
         if (destinationParent == null) {
-            LOG.error(CollaborationToolsBundle.message("clone.dialog.error.destination.not.exist"))
+            LOG.error(GiteaBundle.message("clone.dialog.error.destination.not.exist"))
             GiteaNotifications.showError(project,
                 GiteaNotificationIdsHolder.CLONE_UNABLE_TO_FIND_DESTINATION,
-                CollaborationToolsBundle.message("clone.dialog.clone.failed"),
-                CollaborationToolsBundle.message("clone.dialog.error.unable.to.find.destination.directory"))
+                GiteaBundle.message("clone.dialog.clone.failed"),
+                GiteaBundle.message("clone.dialog.error.unable.to.find.destination.directory"))
             return
         }
         val directoryName = Paths.get(directoryField.text).fileName.toString()
@@ -338,7 +337,7 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
             selectedUrl = giteaGitHelper.getRemoteUrl(giteaRepoPath.serverPath,
                 giteaRepoPath.repositoryPath.owner,
                 giteaRepoPath.repositoryPath.repository)
-            repositoryList.emptyText.appendText(CollaborationToolsBundle.message("clone.dialog.repository.url.text", selectedUrl!!))
+            repositoryList.emptyText.appendText(GiteaBundle.message("clone.dialog.repository.url.text", selectedUrl!!))
             return
         }
         val selectedValue = repositoryList.selectedValue
