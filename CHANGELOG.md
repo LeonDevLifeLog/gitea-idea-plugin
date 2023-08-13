@@ -4,16 +4,16 @@
 
 ## [Unreleased]
 
-### Added
+## [0.2.0-beta] - 2023-08-13
 
+### Added
 - Support Clone Gitea Repository
 
 ## [0.1.0] - 2023-08-11
 
 ### Added
-
 - Support Gitea Task(Issue) manager
 
-[Unreleased]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/v0.1.0...HEAD
-
+[Unreleased]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/v0.2.0-beta...HEAD
+[0.2.0-beta]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/v0.1.0...v0.2.0-beta
 [0.1.0]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/commits/v0.1.0
