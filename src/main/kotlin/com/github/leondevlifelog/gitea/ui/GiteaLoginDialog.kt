@@ -8,7 +8,6 @@ package com.github.leondevlifelog.gitea.ui
 import com.github.leondevlifelog.gitea.GiteaBundle
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountManager
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath
-import com.intellij.collaboration.async.DisposingMainScope
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.service
@@ -16,11 +15,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.DialogWrapper.IS_VISUAL_PADDING_COMPENSATED_ON_COMPONENT_LEVEL_KEY
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsContexts
 import git4idea.i18n.GitBundle
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.awt.Component
 import javax.swing.JComponent
 
@@ -33,7 +31,11 @@ internal sealed class GiteaLoginDialog(
     parent: Component?
 ) : DialogWrapper(project, parent, false, IdeModalityType.PROJECT) {
 
-    private val cs = DisposingMainScope(disposable)
+    private val cs = MainScope().also {
+        Disposer.register(disposable!!) {
+            it.cancel()
+        }
+    }
 
     protected val loginPanel = GiteaLoginPanel() { login, server ->
         model.isAccountUnique(server, login)
@@ -61,8 +63,7 @@ internal sealed class GiteaLoginDialog(
                 accountManager.updateAccount(acc, token)
                 model.saveLogin(loginPanel.getServer(), login, token)
                 close(OK_EXIT_CODE, true)
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 if (e is CancellationException) {
                     close(CANCEL_EXIT_CODE, false)
                     throw e

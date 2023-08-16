@@ -10,7 +10,6 @@ import com.github.leondevlifelog.gitea.GiteaConfig
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountManager
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaProjectDefaultAccountHolder
 import com.github.leondevlifelog.gitea.services.GiteaSettings
-import com.intellij.collaboration.async.DisposingMainScope
 import com.intellij.collaboration.auth.ui.AccountsPanelFactory
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
@@ -18,7 +17,10 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.plus
 
 class GiteaSettingsConfigurable internal constructor(private val project: Project) :
@@ -28,7 +30,11 @@ class GiteaSettingsConfigurable internal constructor(private val project: Projec
         val accountManager = service<GiteaAccountManager>()
         val settings = GiteaSettings.getInstance()
 
-        val scope = DisposingMainScope(disposable!!) + ModalityState.any().asContextElement()
+        val scope = MainScope().also {
+            Disposer.register(disposable!!) {
+                it.cancel()
+            }
+        } + ModalityState.any().asContextElement()
         val accountsModel = GiteaAccountsListModel()
         val detailsProvider = GiteaAccountsDetailsProvider(scope, accountManager, accountsModel)
 

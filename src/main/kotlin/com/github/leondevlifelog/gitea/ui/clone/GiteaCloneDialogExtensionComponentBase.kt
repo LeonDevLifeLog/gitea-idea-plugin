@@ -18,7 +18,6 @@ import com.github.leondevlifelog.gitea.util.GiteaGitHelper
 import com.github.leondevlifelog.gitea.util.GiteaNotificationIdsHolder
 import com.github.leondevlifelog.gitea.util.GiteaNotifications
 import com.github.leondevlifelog.gitea.util.GiteaUrlUtil
-import com.intellij.collaboration.async.disposingMainScope
 import com.intellij.collaboration.auth.ui.CompactAccountsPanelFactory
 import com.intellij.collaboration.ui.CollaborationToolsUIUtil
 import com.intellij.collaboration.util.CollectionDelta
@@ -61,12 +60,9 @@ import git4idea.GitUtil
 import git4idea.checkout.GitCheckoutProvider
 import git4idea.commands.Git
 import git4idea.remote.GitRememberedInputs
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import org.jetbrains.annotations.Nls
 import java.awt.event.ActionEvent
 import java.nio.file.Paths
@@ -89,7 +85,11 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
 
     private val giteaGitHelper: GiteaGitHelper = GiteaGitHelper.getInstance()
 
-    private val cs = disposingMainScope() + modalityState.asContextElement()
+    private val cs = MainScope().also {
+        Disposer.register(this) {
+            it.cancel()
+        }
+    } + modalityState.asContextElement()
 
     // UI
     private val wrapper: Wrapper = Wrapper()
