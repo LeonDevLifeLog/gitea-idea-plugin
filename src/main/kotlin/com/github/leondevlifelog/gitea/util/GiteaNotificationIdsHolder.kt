@@ -6,10 +6,8 @@
 package com.github.leondevlifelog.gitea.util
 
 
-import com.intellij.notification.impl.NotificationIdsHolder
-
-class GiteaNotificationIdsHolder : NotificationIdsHolder {
-    override fun getNotificationIds(): List<String> {
+class GiteaNotificationIdsHolder {
+    fun getNotificationIds(): List<String> {
         return listOf(
             MISSING_DEFAULT_ACCOUNT,
             PULL_REQUEST_CANNOT_SET_TRACKING_BRANCH,

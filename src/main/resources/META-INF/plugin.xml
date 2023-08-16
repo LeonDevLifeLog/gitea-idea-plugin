@@ -13,7 +13,6 @@ New feature coming soon:
 
     <resource-bundle>messages.GiteaBundle</resource-bundle>
     <depends>com.intellij.tasks</depends>
-    <depends>com.intellij.modules.lang</depends>
     <depends>Git4Idea</depends>
     <extensions defaultExtensionNs="com.intellij">
         <tasks.repositoryType implementation="com.github.leondevlifelog.gitea.tasks.GiteaRepositoryType" />

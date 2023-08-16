@@ -5,9 +5,10 @@
 
 package com.github.leondevlifelog.gitea.ui.clone
 
+import com.github.leondevlifelog.gitea.ui.clone.ListLayout.Axis
+import com.github.leondevlifelog.gitea.ui.clone.ListLayout.Companion.getDeltaFactor
 import com.intellij.util.ui.JBInsets
 import com.intellij.util.ui.JBValue
-import org.jetbrains.annotations.ApiStatus
 import java.awt.*
 import kotlin.math.floor
 import kotlin.math.max
@@ -43,7 +44,6 @@ import kotlin.math.min
  * @see [ListLayout.vertical]
  * @see [ListLayout.horizontal]
  */
-@ApiStatus.Experimental
 class ListLayout private constructor(
     private val majorAxis: Axis,
     private val minorAxisAlignment: Alignment,

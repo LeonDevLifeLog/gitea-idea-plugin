@@ -45,7 +45,7 @@ class GiteaChooseAccountDialog @JvmOverloads constructor(project: Project?, pare
             isFocusable = false
             isOpaque = false
             border = null
-            margin = JBInsets.emptyInsets()
+            margin = JBInsets(0, 0, 0, 0)
         }
     }
     private val accountsList: JBList<GiteaAccount> = JBList(accounts).apply {
