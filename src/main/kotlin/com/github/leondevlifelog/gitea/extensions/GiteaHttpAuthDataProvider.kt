@@ -16,37 +16,36 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.service
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.progress.runBlockingMaybeCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.util.AuthData
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import git4idea.remote.GitHttpAuthDataProvider
 import git4idea.remote.hosting.GitHostingUrlUtil.match
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class GiteaHttpAuthDataProvider : GitHttpAuthDataProvider {
     @RequiresBackgroundThread
     override fun getAuthData(project: Project, url: String, login: String): AuthData? {
-        return runBlockingMaybeCancellable {
+        return runBlocking {
             getAuthDataOrCancel(project, url, login)
         }
     }
 
     @RequiresBackgroundThread
     override fun getAuthData(project: Project, url: String): AuthData? {
-        return runBlockingMaybeCancellable {
+        return runBlocking {
             getAuthDataOrCancel(project, url, null)
         }
     }
 
-    private suspend fun getAuthDataOrCancel(project: Project, url: String, login: String?): AuthData {
+    private suspend fun getAuthDataOrCancel(project: Project, url: String, login: String?): AuthData? {
         val accountManager = service<GiteaAccountManager>()
         val accountsWithTokens = accountManager.accountsState.value.filter { match(it.server.toURI(), url) }
             .associateWith { accountManager.findCredentials(it) }
 
-        return withContext(Dispatchers.EDT + ModalityState.NON_MODAL.asContextElement()) {
+        return withContext(Dispatchers.EDT + ModalityState.any().asContextElement()) {
             when (accountsWithTokens.size) {
                 0 -> {
                     GiteaAccountsUtil.requestNewAccount(from(url), login, project)
@@ -63,7 +62,7 @@ class GiteaHttpAuthDataProvider : GitHttpAuthDataProvider {
                     GiteaSelectAccountHttpAuthDataProvider(project, accountsWithTokens).getAuthData(null)
                 }
             }
-        } ?: throw ProcessCanceledException()
+        }
     }
 
     companion object {

@@ -185,7 +185,7 @@ internal class CloneDialogLoginPanel(private val account: GiteaAccount?) :
 
     private fun toErrorComponent(info: ValidationInfo): JComponent = SimpleColoredComponent().apply {
         myBorder = empty()
-        ipad = JBInsets.emptyInsets()
+        ipad = JBInsets(0, 0, 0, 0)
 
         append(info.message, ERROR_ATTRIBUTES)
     }

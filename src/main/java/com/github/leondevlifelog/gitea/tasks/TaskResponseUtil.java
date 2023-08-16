@@ -20,7 +20,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -107,7 +106,6 @@ public final class TaskResponseUtil {
         return TaskBundle.message("failure.http.error", statusCode, HttpStatus.getStatusText(statusCode));
     }
 
-    @ApiStatus.Internal
     public static class JsonResponseHandlerBuilder {
         private final Gson myGson;
         private IntPredicate mySuccessChecker = (code) -> code / 100 == 2;
