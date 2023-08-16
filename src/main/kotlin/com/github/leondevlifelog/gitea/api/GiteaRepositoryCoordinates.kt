@@ -5,16 +5,14 @@
 
 package com.github.leondevlifelog.gitea.api
 
-
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath
 import com.intellij.collaboration.util.resolveRelative
-import git4idea.remote.hosting.HostedRepositoryCoordinates
 import com.intellij.openapi.util.NlsSafe
 import java.net.URI
 
 data class GiteaRepositoryCoordinates(
-    override val serverPath: GiteaServerPath, val repositoryPath: GiteaRepositoryPath
-) : HostedRepositoryCoordinates {
+    val serverPath: GiteaServerPath, val repositoryPath: GiteaRepositoryPath
+) {
 
     fun toUrl(): String {
         return serverPath.toURI().toString() + "/" + repositoryPath
@@ -32,9 +30,7 @@ data class GiteaRepositoryCoordinates(
         if (other !is GiteaRepositoryCoordinates) return false
 
         if (serverPath != other.serverPath) return false
-        if (repositoryPath != other.repositoryPath) return false
-
-        return true
+        return repositoryPath == other.repositoryPath
     }
 
     override fun hashCode(): Int {

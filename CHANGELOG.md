@@ -4,14 +4,20 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- issues about plugin verification
+
 ## [0.2.1] - 2023-08-16
 
 ### Fixed
+
 - issues about plugin verification
 
 ## [0.2.0] - 2023-08-14
 
 ### Added
+
 - Support Clone Gitea Repository
 
 ## [0.2.0-beta] - 2023-08-13

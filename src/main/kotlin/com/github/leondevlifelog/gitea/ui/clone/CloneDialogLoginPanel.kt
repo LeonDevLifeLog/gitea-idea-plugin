@@ -9,7 +9,6 @@ import com.github.leondevlifelog.gitea.GiteaBundle
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccount
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountManager
 import com.github.leondevlifelog.gitea.ui.GiteaLoginPanel
-import com.intellij.collaboration.async.disposingMainScope
 import com.intellij.ide.IdeBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -22,6 +21,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.ComponentValidator
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.SimpleTextAttributes.ERROR_ATTRIBUTES
@@ -34,10 +34,7 @@ import com.intellij.util.ui.JBInsets
 import com.intellij.util.ui.JBUI.Borders.empty
 import com.intellij.util.ui.JBUI.Panels.simplePanel
 import com.intellij.util.ui.UIUtil.getRegularPanelInsets
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import java.awt.Dimension
 import java.awt.LayoutManager
 import java.awt.Rectangle
@@ -46,7 +43,11 @@ import javax.swing.*
 internal class CloneDialogLoginPanel(private val account: GiteaAccount?) :
     JBPanel<CloneDialogLoginPanel>(ListLayout.vertical(0)), Disposable {
 
-    private val cs = disposingMainScope()
+    private val cs = MainScope().also {
+        Disposer.register(this) {
+            it.cancel()
+        }
+    }
 
     private val accountManager get() = service<GiteaAccountManager>()
 
