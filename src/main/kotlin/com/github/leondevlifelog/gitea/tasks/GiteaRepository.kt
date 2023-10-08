@@ -8,14 +8,22 @@ package com.github.leondevlifelog.gitea.tasks
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.tasks.LocalTask
 import com.intellij.tasks.Task
 import com.intellij.tasks.TaskRepositoryType
 import com.intellij.tasks.impl.BaseRepository
 import com.intellij.tasks.impl.httpclient.NewBaseRepositoryImpl
 import com.intellij.util.xmlb.annotations.Tag
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.utils.URIBuilder
+import org.apache.http.entity.ContentType
+import org.apache.http.entity.StringEntity
+import org.gitnex.tea4j.v2.models.AddTimeOption
 import org.gitnex.tea4j.v2.models.Issue
+import org.gitnex.tea4j.v2.models.TrackedTime
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Gitea Task Repo
@@ -64,8 +72,7 @@ class GiteaRepository : NewBaseRepositoryImpl {
     override fun getIssues(query: String?, offset: Int, limit: Int, withClosed: Boolean): Array<Task> {
         val uri = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")).addParameter("q", query)
             .addParameter("assigned", assigned.toString()).addParameter("page", ((offset / limit) + 1).toString())
-            .addParameter("access_token", password)
-            .addParameter("limit", limit.toString()).build()
+            .addParameter("access_token", password).addParameter("limit", limit.toString()).build()
         val httpGet = HttpGet(uri)
         val issues = httpClient.execute(
             httpGet, TaskResponseUtil.GsonMultipleObjectsDeserializer<Issue>(GSON, LIST_OF_ISSUES_TYPE)
@@ -106,4 +113,24 @@ class GiteaRepository : NewBaseRepositoryImpl {
         return result
     }
 
+    override fun updateTimeSpent(task: LocalTask, timeSpent: String, comment: String) {
+        val issueTrackedTimeUrl = getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues", task.id, "times")
+        val url = URIBuilder(issueTrackedTimeUrl).addParameter("access_token", password).build()
+        val httpPost = HttpPost(url)
+        val addTimeOption = AddTimeOption()
+        addTimeOption.created = Date()
+        addTimeOption.userName = username
+        val matcher = TIME_SPENT_PATTERN.matcher(timeSpent)
+        if (!matcher.find()) {
+            return
+        }
+        val hour = matcher.group(0).toLong()
+        val minute = matcher.group(1).toLong()
+        val spendTimeInSecond = TimeUnit.HOURS.toSeconds(hour) + TimeUnit.MINUTES.toSeconds(minute)
+        addTimeOption.time = spendTimeInSecond
+        httpPost.entity = StringEntity(GSON.toJson(addTimeOption), ContentType.APPLICATION_JSON)
+        val trackedTime: TrackedTime? =
+            httpClient.execute(httpPost, TaskResponseUtil.GsonSingleObjectDeserializer(GSON, TrackedTime::class.java))
+        trackedTime ?: return
+    }
 }
