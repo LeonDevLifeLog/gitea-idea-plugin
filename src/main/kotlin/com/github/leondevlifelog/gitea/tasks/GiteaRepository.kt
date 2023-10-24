@@ -27,7 +27,6 @@ import org.gitnex.tea4j.v2.models.AddTimeOption
 import org.gitnex.tea4j.v2.models.EditIssueOption
 import org.gitnex.tea4j.v2.models.Issue
 import org.gitnex.tea4j.v2.models.TrackedTime
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -125,22 +124,19 @@ class GiteaRepository : NewBaseRepositoryImpl {
         val url = URIBuilder(issueTrackedTimeUrl).addParameter("access_token", password).build()
         val httpPost = HttpPost(url)
         val addTimeOption = AddTimeOption()
-        addTimeOption.created = Date()
-        addTimeOption.userName = username
         val matcher = TIME_SPENT_PATTERN.matcher(timeSpent)
         if (!matcher.find()) {
             LOG.warn("can not get the time spent")
             return
         }
-        val hour = matcher.group(0).toLong()
-        val minute = matcher.group(1).toLong()
+        val hour = matcher.group(1).toLong()
+        val minute = matcher.group(2).toLong()
         val spendTimeInSecond = TimeUnit.HOURS.toSeconds(hour) + TimeUnit.MINUTES.toSeconds(minute)
         addTimeOption.time = spendTimeInSecond
         LOG.debug("the time spend for issue:${task} is ${spendTimeInSecond}s")
         httpPost.entity = StringEntity(GSON.toJson(addTimeOption), ContentType.APPLICATION_JSON)
         val trackedTime: TrackedTime? =
             httpClient.execute(httpPost, TaskResponseUtil.GsonSingleObjectDeserializer(GSON, TrackedTime::class.java))
-        LOG.debug("response is $trackedTime")
         trackedTime ?: return
     }
 
