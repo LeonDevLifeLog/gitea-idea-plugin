@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- support issue/task state update by idea
+- support issue/task time track
+
+### Fixed
+
+- incorrect use of global issue number
+
 ## [0.2.2] - 2023-08-16
 
 ### Fixed
