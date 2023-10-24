@@ -14,7 +14,7 @@ Gitea Plugin for Jetbrains IDEs.
   * Track time
   * Update state
 
-# New feature Coming Soon:
+# New Feature Coming Soon:
 
 * Issue management
 * PR Management & Review
@@ -34,7 +34,8 @@ Gitea Plugin for Jetbrains IDEs.
 | Features Preview                    | Features Preview                    | Features Preview                    |
 |-------------------------------------|-------------------------------------|-------------------------------------|
 | ![Features Preview](./assets/0.png) | ![Features Preview](./assets/1.png) | ![Features Preview](./assets/2.png) |
-| ![Features Preview](./assets/3.png) | ![Features Preview](./assets/4.png) |                                     |
+| ![Features Preview](./assets/3.png) | ![Features Preview](./assets/4.png) | ![Features Preview](./assets/7.png) |
+| ![Features Preview](./assets/8.png) |                                     |                                     |
 
 ## Installation
 
