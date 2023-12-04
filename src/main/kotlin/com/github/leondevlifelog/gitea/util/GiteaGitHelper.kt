@@ -20,7 +20,7 @@ class GiteaGitHelper {
     fun getRemoteUrl(server: GiteaServerPath, user: String, repo: String): String {
         val port = if (server.getPort() != -1) ":${server.getPort()}" else ""
         return if (GiteaSettings.getInstance().isCloneGitUsingSsh()) {
-            "git@${server.getHost()}$port/$user/$repo.git"
+            "git@${server.getHost()}$port:$user/$repo.git"
         } else {
             "${server.getSchema()}${URLUtil.SCHEME_SEPARATOR}${server.getHost()}$port/$user/$repo.git"
         }
