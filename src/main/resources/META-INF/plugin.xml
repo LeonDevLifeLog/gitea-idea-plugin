@@ -29,6 +29,7 @@ New feature coming soon:
             instance="com.github.leondevlifelog.gitea.ui.GiteaSettingsConfigurable" />
         <applicationService
             serviceImplementation="com.github.leondevlifelog.gitea.authentication.accounts.GiteaPersistentAccounts" />
+        <postStartupActivity implementation="com.github.leondevlifelog.gitea.listeners.OpenProjectListener" />
     </extensions>
     <extensions defaultExtensionNs="Git4Idea">
         <GitHttpAuthDataProvider
