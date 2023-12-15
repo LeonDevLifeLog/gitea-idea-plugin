@@ -6,20 +6,18 @@ package com.github.leondevlifelog.gitea.authentication.accounts
 
 import com.github.leondevlifelog.gitea.GiteaBundle
 import com.github.leondevlifelog.gitea.util.GiteaNotificationIdsHolder
-import com.github.leondevlifelog.gitea.util.GiteaNotifications
 import com.intellij.collaboration.auth.PersistentDefaultAccountHolder
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.StoragePathMacros
-import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsNotifier
+import kotlinx.coroutines.CoroutineScope
 
 @State(name = "GiteaDefaultAccount", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
-class GiteaProjectDefaultAccountHolder(project: Project) : PersistentDefaultAccountHolder<GiteaAccount>(project) {
+@Service(Service.Level.PROJECT)
+class GiteaProjectDefaultAccountHolder(project: Project, scope: CoroutineScope) :
+    PersistentDefaultAccountHolder<GiteaAccount>(project, scope) {
 
     override fun accountManager() = service<GiteaAccountManager>()
 

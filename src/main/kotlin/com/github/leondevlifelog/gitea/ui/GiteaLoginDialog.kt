@@ -32,7 +32,7 @@ internal sealed class GiteaLoginDialog(
 ) : DialogWrapper(project, parent, false, IdeModalityType.PROJECT) {
 
     private val cs = MainScope().also {
-        Disposer.register(disposable!!) {
+        Disposer.register(disposable) {
             it.cancel()
         }
     }

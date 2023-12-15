@@ -37,7 +37,7 @@ class GiteaChooseAccountDialog @JvmOverloads constructor(project: Project?, pare
     private val description: JTextArea? = descriptionText?.let {
         JTextArea().apply {
             minimumSize = Dimension(0, 0)
-            font = StartupUiUtil.getLabelFont()
+            font = StartupUiUtil.labelFont
             text = it
             lineWrap = true
             wrapStyleWord = true

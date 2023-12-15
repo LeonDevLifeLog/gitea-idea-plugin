@@ -6,7 +6,7 @@
 package com.github.leondevlifelog.gitea.ui.clone
 
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccount
-import com.intellij.collaboration.ui.util.getName
+import com.intellij.collaboration.ui.util.name
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.CellRendererPanel
 import com.intellij.ui.ColoredListCellRenderer
@@ -67,7 +67,7 @@ class GiteaRepositoryListCellRenderer(private val errorHandler: ErrorHandler,
                 append(errorHandler.getPresentableText(error), SimpleTextAttributes.ERROR_ATTRIBUTES)
                 val action = errorHandler.getAction(value.account, error)
                 append(" ")
-                append(action.getName(), SimpleTextAttributes.LINK_ATTRIBUTES, action)
+                action.name?.let { append(it, SimpleTextAttributes.LINK_ATTRIBUTES, action) }
             }
         }
     }
