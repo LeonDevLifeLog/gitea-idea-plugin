@@ -91,5 +91,6 @@ class GiteaNotificationIdsHolder {
         const val SHARE_PROJECT_INIT_PUSH_FAILED = "gitea.share.init.push.failed"
         const val GIST_CREATED = "gitea.gist.created"
         const val GIT_REPO_INIT_REPO = "gitea.git.repo.init.error"
+        const val GITHUB_START_ME = "gitea.github.star.me"
     }
 }

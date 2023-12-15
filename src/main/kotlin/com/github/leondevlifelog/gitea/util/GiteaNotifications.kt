@@ -5,8 +5,10 @@
 
 package com.github.leondevlifelog.gitea.util
 
+import com.github.leondevlifelog.gitea.GiteaBundle
+import com.github.leondevlifelog.gitea.GiteaConfig
 import com.github.leondevlifelog.gitea.exception.GiteaOperationCanceledException
-import com.intellij.notification.NotificationListener
+import com.intellij.notification.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -178,6 +180,21 @@ object GiteaNotifications {
     ): Boolean {
         return MessageDialogBuilder.yesNo(title!!, message!!).icon(Messages.getQuestionIcon()).doNotAsk(doNotAskOption)
             .ask(project)
+    }
+
+    fun showStarMe(project: Project) {
+        val notification = Notification(
+            GiteaNotificationIdsHolder.GITHUB_START_ME,
+            GiteaBundle.message("github.star.me"),
+            GiteaBundle.message("github.made.with.love"),
+            NotificationType.INFORMATION
+        )
+        notification.addAction(
+            BrowseNotificationAction(
+                GiteaBundle.message("github.goto.star.it"), GiteaConfig.REPO_URL
+            )
+        )
+        Notifications.Bus.notify(notification, project)
     }
 
 }

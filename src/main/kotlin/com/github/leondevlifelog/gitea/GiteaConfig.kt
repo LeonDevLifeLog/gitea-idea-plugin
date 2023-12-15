@@ -12,4 +12,6 @@ package com.github.leondevlifelog.gitea
 object GiteaConfig {
     const val SERVICE_DISPLAY_NAME: String = "Gitea"
     const val ACCESS_TOKEN_AUTH = "access_token"
+    const val REPO_URL = "https://github.com/LeonDevLifeLog/gitea-idea-plugin"
+    const val GITEA_PLUGIN_ID = "com.github.leondevlifelog.gitea"
 }
