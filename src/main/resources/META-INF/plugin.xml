@@ -22,14 +22,13 @@ New feature coming soon:
             id="com.github.leondevlifelog.gitea.ui.clone.GiteaCloneDialogExtension"
             implementation="com.github.leondevlifelog.gitea.ui.clone.GiteaCloneDialogExtension" />
         <applicationService serviceImplementation="com.github.leondevlifelog.gitea.services.GiteaSettings" />
-        <applicationService serviceImplementation="com.github.leondevlifelog.gitea.services.CachingGiteaUserAvatarLoader" />
+        <applicationService
+            serviceImplementation="com.github.leondevlifelog.gitea.services.CachingGiteaUserAvatarLoader" />
 
         <projectConfigurable parentId="project.propVCSSupport.Mappings" groupWeight="-500"
             instance="com.github.leondevlifelog.gitea.ui.GiteaSettingsConfigurable" />
         <applicationService
             serviceImplementation="com.github.leondevlifelog.gitea.authentication.accounts.GiteaPersistentAccounts" />
-        <projectService
-            serviceImplementation="com.github.leondevlifelog.gitea.authentication.accounts.GiteaProjectDefaultAccountHolder" />
     </extensions>
     <extensions defaultExtensionNs="Git4Idea">
         <GitHttpAuthDataProvider
