@@ -1,23 +1,17 @@
 package com.github.leondevlifelog.gitea.tasks;
 
 import com.github.leondevlifelog.gitea.GiteaBundle;
+import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsBundle;
-import com.intellij.tasks.TaskBundle;
-import com.intellij.tasks.TaskManager;
 import com.intellij.tasks.config.BaseRepositoryEditor;
-import com.intellij.tasks.config.TaskRepositoriesConfigurable;
-import com.intellij.tasks.impl.RequestFailedException;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
-import com.intellij.util.*;
+import com.intellij.util.Consumer;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.GridBag;
 import org.jetbrains.annotations.Nls;
@@ -28,10 +22,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
     private final Project project;
@@ -100,15 +90,8 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
         myTokenButton = new JButton(GiteaBundle.message("task.repo.token.create.button"));
         myTokenButton.addActionListener(e -> {
             String urlText = myURLText.getText();
-            try {
-                URL url = new URL(urlText);
-                URI uri = url.toURI();
-                uri = uri.resolve("/user/settings/applications");
-                BrowserUtil.browse(uri);
-            } catch (MalformedURLException | URISyntaxException ex) {
-                String content = "<p>" + GiteaBundle.message("notification.title.invalid.url") + "</p>" + urlText;
-                new Notification(TASKS_NOTIFICATION_GROUP, GiteaBundle.message("notification.title.invalid.url"), content, NotificationType.WARNING).notify(project);
-            }
+            GiteaServerPath instance = GiteaServerPath.from(urlText);
+            BrowserUtil.browse(instance.toAccessTokenUrl());
         });
 
         JPanel myTokenPanel = new JPanel();
