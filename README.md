@@ -50,6 +50,10 @@ Gitea Plugin for Jetbrains IDEs.
   manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
+## Special Thanks
+
+[![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://jb.gg/OpenSourceSupport)
+
 ---
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 
