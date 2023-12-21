@@ -45,18 +45,20 @@ class GiteaSettingsConfigurable internal constructor(private val project: Projec
             row {
                 panelFactory.accountsPanelCell(this, detailsProvider, actionsController).align(Align.FILL)
             }.resizableRow()
-
+            row(GiteaBundle.message("settings.ssh.port")) {
+                intTextField(range = 22..65535).columns(2).bindIntText({ settings.getSshPort() }, {
+                    settings.setSshPort(it)
+                }).gap(RightGap.SMALL)
+            }
             row {
                 checkBox(GiteaBundle.message("settings.clone.ssh")).bindSelected(
-                        settings::isCloneGitUsingSsh,
-                        settings::setCloneGitUsingSsh
-                    )
+                    settings::isCloneGitUsingSsh, settings::setCloneGitUsingSsh
+                )
             }
             row(GiteaBundle.message("settings.timeout")) {
                 intTextField(range = 0..60).columns(2).bindIntText({ settings.getConnectionTimeout() / 1000 }, {
-                        settings.setConnectionTimeout(it * 1000)
-                    })
-                    .gap(RightGap.SMALL)
+                    settings.setConnectionTimeout(it * 1000)
+                }).gap(RightGap.SMALL)
                 @Suppress("DialogTitleCapitalization") label(GiteaBundle.message("settings.timeout.seconds"))
             }
         }
