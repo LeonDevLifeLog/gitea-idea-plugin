@@ -27,7 +27,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) :
 
     companion object {
         @JvmStatic
-        val DEFAULT_SERVER = GiteaServerPath(false, "localhost", 443, null)
+        val DEFAULT_SERVER = GiteaServerPath(false, "localhost", -1, null)
 
         @Throws(GiteaParseException::class)
         @JvmStatic
