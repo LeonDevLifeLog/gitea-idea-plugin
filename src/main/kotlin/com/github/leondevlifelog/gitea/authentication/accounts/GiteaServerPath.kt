@@ -12,6 +12,7 @@ import com.intellij.util.xmlb.annotations.Attribute
 import com.intellij.util.xmlb.annotations.Tag
 import org.apache.http.client.utils.URIBuilder
 import org.jetbrains.annotations.NotNull
+import org.jetbrains.annotations.Nullable
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
@@ -21,19 +22,20 @@ import java.net.URL
  * Gitea server reference allowing to specify custom port and path to instance
  */
 @Tag("server")
-class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
-    constructor() : this(DEFAULT_SERVER.myUseHttp, DEFAULT_SERVER.myHost, DEFAULT_SERVER.myPort)
+class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) : ServerPath {
+    constructor() : this(DEFAULT_SERVER.myUseHttp, DEFAULT_SERVER.myHost, DEFAULT_SERVER.myPort, DEFAULT_SERVER.myPath)
 
     companion object {
         @JvmStatic
-        val DEFAULT_SERVER = GiteaServerPath(false, "localhost", 443)
+        val DEFAULT_SERVER = GiteaServerPath(false, "localhost", -1, null)
 
         @Throws(GiteaParseException::class)
+        @JvmStatic
         fun from(url: String): GiteaServerPath {
             try {
                 val instanceUrl = URL(url)
                 return GiteaServerPath(
-                    instanceUrl.protocol == URLUtil.HTTP_PROTOCOL, instanceUrl.host, instanceUrl.port
+                    instanceUrl.protocol == URLUtil.HTTP_PROTOCOL, instanceUrl.host, instanceUrl.port, instanceUrl.path
                 )
             } catch (e: MalformedURLException) {
                 throw GiteaParseException()
@@ -50,8 +52,11 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
     @Attribute("port")
     private var myPort: Int = port
 
+    @Attribute("path")
+    private var myPath: String? = path
+
     override fun toString(): String {
-        return "${getSchema()}${URLUtil.SCHEME_SEPARATOR}$myHost${if (myPort != -1) ":$myPort" else ""}"
+        return toURI().toString().trim('/')
     }
 
     override fun toURI(): URI {
@@ -59,6 +64,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
             scheme = getSchema()
             host = myHost
             port = myPort
+            path = myPath
         }.build()
     }
 
@@ -77,8 +83,23 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
         return myPort
     }
 
+    @Nullable
+    fun getPath(): String? {
+        return myPath
+    }
+
+    fun toSshCloneUrl(user: String, repo: String, sshPort: Int): String {
+        return "ssh://git@${myHost}:$sshPort/$user/$repo.git"
+    }
+
+    fun toHttpCloneUrl(user: String, repo: String): String {
+        val instanceUrl = toString().trim('/')
+        return "${instanceUrl}/$user/$repo.git"
+    }
+
     fun toAccessTokenUrl(): String {
-        return "${getSchema()}${URLUtil.SCHEME_SEPARATOR}$myHost${if (myPort != -1) ":$myPort" else ""}/user/settings/applications"
+        val instanceUrl = toString().trim('/')
+        return "$instanceUrl/user/settings/applications"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -90,6 +111,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
         if (myUseHttp != other.myUseHttp) return false
         if (myHost != other.myHost) return false
         if (myPort != other.myPort) return false
+        if (myPath != other.myPath) return false
 
         return true
     }
@@ -105,6 +127,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
         }
         if (myHost != other.myHost) return false
         if (myPort != other.myPort) return false
+        if (myPath != other.myPath) return false
 
         return true
     }
@@ -113,6 +136,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int) : ServerPath {
         var result = myUseHttp.hashCode()
         result = 31 * result + myHost.hashCode()
         result = 31 * result + myPort
+        result = 31 * result + myPath.hashCode()
         return result
     }
 

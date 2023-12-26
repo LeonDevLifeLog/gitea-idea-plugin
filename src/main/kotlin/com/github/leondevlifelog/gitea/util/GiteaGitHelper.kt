@@ -9,7 +9,6 @@ import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath
 import com.github.leondevlifelog.gitea.services.GiteaSettings
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.util.io.URLUtil
 
 /**
  * Utilities for Gitea-Git interactions
@@ -18,11 +17,10 @@ import com.intellij.util.io.URLUtil
 class GiteaGitHelper {
 
     fun getRemoteUrl(server: GiteaServerPath, user: String, repo: String): String {
-        val port = GiteaSettings.getInstance().getSshPort()
         return if (GiteaSettings.getInstance().isCloneGitUsingSsh()) {
-            "ssh://git@${server.getHost()}:$port/$user/$repo.git"
+            server.toSshCloneUrl(user, repo, GiteaSettings.getInstance().getSshPort())
         } else {
-            "${server.getSchema()}${URLUtil.SCHEME_SEPARATOR}${server.getHost()}$port/$user/$repo.git"
+            server.toHttpCloneUrl(user, repo)
         }
     }
 
