@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support pull code by ssh custom port
+- Support reverse proxy Gitea instance with a sub-path
+
 ## [0.3.2] - 2023-12-15
 
 ### Added
