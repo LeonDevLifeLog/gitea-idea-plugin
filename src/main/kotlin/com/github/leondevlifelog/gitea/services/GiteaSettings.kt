@@ -13,15 +13,14 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 
 @State(
-    name = "GiteaSettings",
-    storages = [Storage(value = "gitea.xml")],
-    category = SettingsCategory.TOOLS
+    name = "GiteaSettings", storages = [Storage(value = "gitea.xml")], category = SettingsCategory.TOOLS
 )
 class GiteaSettings : PersistentStateComponent<GiteaSettings.State> {
     private var myState = State()
-    fun getGiteaApi(baseUrl:String,token:String): GiteaApi {
-        return GiteaApi(baseUrl,token)
+    fun getGiteaApi(baseUrl: String, token: String): GiteaApi {
+        return GiteaApi(baseUrl, token)
     }
+
     class State {
         var OPEN_IN_BROWSER_GIST = true
         var COPY_URL_GIST = false
@@ -30,6 +29,7 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.State> {
         var PRIVATE_GIST = true
         var CONNECTION_TIMEOUT = 5000
         var CLONE_GIT_USING_SSH = false
+        var SSH_PORT = 22
     }
 
     override fun getState(): State {
@@ -45,6 +45,10 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.State> {
         fun getInstance(): GiteaSettings {
             return ApplicationManager.getApplication().getService(GiteaSettings::class.java)
         }
+    }
+
+    fun getSshPort(): Int {
+        return myState.SSH_PORT
     }
 
     fun getConnectionTimeout(): Int {
@@ -85,6 +89,10 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.State> {
 
     fun setCloneGitUsingSsh(value: Boolean) {
         myState.CLONE_GIT_USING_SSH = value
+    }
+
+    fun setSshPort(port: Int) {
+        myState.SSH_PORT = port
     }
 
 }
