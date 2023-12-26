@@ -18,7 +18,7 @@ class GiteaGitHelper {
 
     fun getRemoteUrl(server: GiteaServerPath, user: String, repo: String): String {
         return if (GiteaSettings.getInstance().isCloneGitUsingSsh()) {
-            server.toSshCloneUrl(user, repo)
+            server.toSshCloneUrl(user, repo, GiteaSettings.getInstance().getSshPort())
         } else {
             server.toHttpCloneUrl(user, repo)
         }

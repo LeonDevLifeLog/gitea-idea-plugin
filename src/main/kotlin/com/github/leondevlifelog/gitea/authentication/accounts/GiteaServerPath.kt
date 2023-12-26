@@ -6,7 +6,6 @@
 package com.github.leondevlifelog.gitea.authentication.accounts
 
 import com.github.leondevlifelog.gitea.exception.GiteaParseException
-import com.github.leondevlifelog.gitea.services.GiteaSettings
 import com.intellij.collaboration.api.ServerPath
 import com.intellij.util.io.URLUtil
 import com.intellij.util.xmlb.annotations.Attribute
@@ -89,8 +88,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) :
         return myPath
     }
 
-    fun toSshCloneUrl(user: String, repo: String): String {
-        val sshPort = GiteaSettings.getInstance().getSshPort()
+    fun toSshCloneUrl(user: String, repo: String, sshPort: Int): String {
         return "ssh://git@${myHost}:$sshPort/$user/$repo.git"
     }
 
