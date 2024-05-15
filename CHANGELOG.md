@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support IntelliJ IDEA 2024.1
+
 ## [0.3.3] - 2023-12-26
 
 ### Added
