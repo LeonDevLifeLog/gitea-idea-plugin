@@ -32,7 +32,7 @@ class GiteaChooseAccountDialog @JvmOverloads constructor(project: Project?, pare
                                                               "account.choose.title"),
                                                          @Nls(capitalization = Nls.Capitalization.Title) okText: String = GiteaBundle.message(
                                                               "account.choose.button"))
-    : DialogWrapper(project, parentComponent, false, IdeModalityType.PROJECT) {
+    : DialogWrapper(project, parentComponent, false, IdeModalityType.MODELESS) {
 
     private val description: JTextArea? = descriptionText?.let {
         JTextArea().apply {
