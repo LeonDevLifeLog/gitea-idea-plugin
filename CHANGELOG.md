@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support Gitea with self-signed cert.
+
 ## [0.3.4] - 2024-05-15
 
 ### Added

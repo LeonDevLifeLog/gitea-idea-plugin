@@ -5,6 +5,7 @@
 
 package com.github.leondevlifelog.gitea.api
 
+import com.intellij.util.net.ssl.CertificateManager
 import okhttp3.OkHttpClient
 import org.gitnex.tea4j.v2.apis.IssueApi
 import org.gitnex.tea4j.v2.apis.RepositoryApi
@@ -26,9 +27,11 @@ class GiteaApi {
      * @see AccessTokenAuth
      */
     constructor(baseUrl: String, token: String) {
-        retrofit = Retrofit.Builder().baseUrl("$baseUrl/api/v1/")
-            .client(OkHttpClient.Builder().addInterceptor(AccessTokenAuth(token)).build())
-            .addConverterFactory(GsonConverterFactory.create()).build()
+        retrofit = Retrofit.Builder().baseUrl("$baseUrl/api/v1/").client(
+            OkHttpClient.Builder().sslSocketFactory(
+                CertificateManager.getInstance().sslContext.socketFactory, CertificateManager.getInstance().trustManager
+            ).addInterceptor(AccessTokenAuth(token)).build()
+        ).addConverterFactory(GsonConverterFactory.create()).build()
     }
 
     /**
@@ -38,9 +41,11 @@ class GiteaApi {
      * @see BasicAuth
      */
     constructor(baseUrl: String, username: String, password: String) {
-        retrofit = Retrofit.Builder().baseUrl(baseUrl)
-            .client(OkHttpClient.Builder().addInterceptor(BasicAuth(username, password)).build())
-            .addConverterFactory(GsonConverterFactory.create()).build()
+        retrofit = Retrofit.Builder().baseUrl(baseUrl).client(
+            OkHttpClient.Builder().sslSocketFactory(
+                CertificateManager.getInstance().sslContext.socketFactory, CertificateManager.getInstance().trustManager
+            ).addInterceptor(BasicAuth(username, password)).build()
+        ).addConverterFactory(GsonConverterFactory.create()).build()
     }
 
     fun getIssueApi(): IssueApi {
