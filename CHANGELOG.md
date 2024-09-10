@@ -2,6 +2,11 @@
 
 # Gitea Changelog
 
+### Added
+
+- Support IntelliJ IDEA 2024.2
+- upgrade SDK version to 2.x
+
 ## [Unreleased]
 
 ## [0.4.0] - 2024-07-25
