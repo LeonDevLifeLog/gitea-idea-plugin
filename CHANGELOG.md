@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Support IntelliJ idea 2024.3
+
 ## [0.5.0] - 2024-09-10
 
 ### Added
