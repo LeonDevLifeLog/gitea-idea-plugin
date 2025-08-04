@@ -51,13 +51,17 @@ internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogReposi
             val user = userApi.userGetCurrent().execute().body() ?: return@submitIOTask
             
             val allRepos = mutableListOf<Repository>()
-            for (page in 1..99) {
+            var page = 1
+            val perPage = 50
+            while (true) {
                 indicator.checkCanceled()
-                val pageResult = userApi.userCurrentListRepos(page, 100).execute().body() ?: break
+                val pageResult = userApi.userCurrentListRepos(page, perPage).execute().body() ?: break
                 if (pageResult.isEmpty()) break
                 allRepos.addAll(pageResult)
+                if (pageResult.size < perPage) break
+                page += 1
             }
-            
+
             if (allRepos.isEmpty()) return@submitIOTask
             val mutableList = allRepos
             runInEdt {
