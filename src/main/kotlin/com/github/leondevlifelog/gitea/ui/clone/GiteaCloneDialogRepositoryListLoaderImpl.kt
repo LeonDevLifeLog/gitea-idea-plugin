@@ -63,7 +63,11 @@ internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogReposi
             }
 
             if (allRepos.isEmpty()) return@submitIOTask
-            val mutableList = allRepos
+            val mutableList = allRepos.sortedWith(compareBy<Repository>({ repo ->
+                val owner = repo.owner?.login?.lowercase() ?: ""
+                val userLogin = user.login?.lowercase() ?: ""
+                if (owner == userLogin) 0 else 1
+            }, { repo -> repo.owner?.login?.lowercase() ?: "" }, { repo -> repo.name?.lowercase() ?: "" })).toMutableList()
             runInEdt {
                 indicator.checkCanceled()
                 preservingSelection(listModel, listSelectionModel) {
