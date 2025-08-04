@@ -22,6 +22,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.ui.SingleSelectionModel
 import com.intellij.util.EventDispatcher
 import kotlinx.coroutines.runBlocking
+import org.gitnex.tea4j.v2.models.Repository
 import javax.swing.ListSelectionModel
 
 internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogRepositoryListLoader, Disposable {
@@ -48,7 +49,17 @@ internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogReposi
 
             val userApi = service<GiteaSettings>().getGiteaApi(account.server.toString(), token).getUserApi()
             val user = userApi.userGetCurrent().execute().body() ?: return@submitIOTask
-            val mutableList = userApi.userCurrentListRepos(1, 9999).execute().body() ?: return@submitIOTask
+            
+            val allRepos = mutableListOf<Repository>()
+            for (page in 1..99) {
+                indicator.checkCanceled()
+                val pageResult = userApi.userCurrentListRepos(page, 100).execute().body() ?: break
+                if (pageResult.isEmpty()) break
+                allRepos.addAll(pageResult)
+            }
+            
+            if (allRepos.isEmpty()) return@submitIOTask
+            val mutableList = allRepos
             runInEdt {
                 indicator.checkCanceled()
                 preservingSelection(listModel, listSelectionModel) {
