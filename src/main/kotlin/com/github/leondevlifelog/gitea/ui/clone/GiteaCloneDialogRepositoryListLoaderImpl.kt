@@ -52,7 +52,7 @@ internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogReposi
             
             val allRepos = mutableListOf<Repository>()
             var page = 1
-            val perPage = 50
+            val perPage = service<GiteaSettings>().getReposPerPage()
             while (true) {
                 indicator.checkCanceled()
                 val pageResult = userApi.userCurrentListRepos(page, perPage).execute().body() ?: break

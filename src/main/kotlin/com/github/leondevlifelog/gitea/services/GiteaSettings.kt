@@ -21,7 +21,10 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.State> {
         return GiteaApi(baseUrl, token)
     }
 
+    fun getReposPerPage(): Int = myState.REPOS_PER_PAGE
+    fun setReposPerPage(value: Int) { myState.REPOS_PER_PAGE = value.coerceAtMost(50).coerceAtLeast(1) }
     class State {
+        var REPOS_PER_PAGE = 50
         var OPEN_IN_BROWSER_GIST = true
         var COPY_URL_GIST = false
 
