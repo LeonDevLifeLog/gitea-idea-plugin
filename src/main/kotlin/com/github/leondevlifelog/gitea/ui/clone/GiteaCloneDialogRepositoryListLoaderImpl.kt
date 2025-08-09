@@ -22,6 +22,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.ui.SingleSelectionModel
 import com.intellij.util.EventDispatcher
 import kotlinx.coroutines.runBlocking
+import org.gitnex.tea4j.v2.models.Repository
 import javax.swing.ListSelectionModel
 
 internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogRepositoryListLoader, Disposable {
@@ -48,7 +49,25 @@ internal class GiteaCloneDialogRepositoryListLoaderImpl : GiteaCloneDialogReposi
 
             val userApi = service<GiteaSettings>().getGiteaApi(account.server.toString(), token).getUserApi()
             val user = userApi.userGetCurrent().execute().body() ?: return@submitIOTask
-            val mutableList = userApi.userCurrentListRepos(1, 9999).execute().body() ?: return@submitIOTask
+            
+            val allRepos = mutableListOf<Repository>()
+            var page = 1
+            val perPage = service<GiteaSettings>().getReposPerPage()
+            while (true) {
+                indicator.checkCanceled()
+                val pageResult = userApi.userCurrentListRepos(page, perPage).execute().body() ?: break
+                if (pageResult.isEmpty()) break
+                allRepos.addAll(pageResult)
+                if (pageResult.size < perPage) break
+                page += 1
+            }
+
+            if (allRepos.isEmpty()) return@submitIOTask
+            val mutableList = allRepos.sortedWith(compareBy<Repository>({ repo ->
+                val owner = repo.owner?.login?.lowercase() ?: ""
+                val userLogin = user.login?.lowercase() ?: ""
+                if (owner == userLogin) 0 else 1
+            }, { repo -> repo.owner?.login?.lowercase() ?: "" }, { repo -> repo.name?.lowercase() ?: "" })).toMutableList()
             runInEdt {
                 indicator.checkCanceled()
                 preservingSelection(listModel, listSelectionModel) {
