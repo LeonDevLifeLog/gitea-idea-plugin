@@ -21,9 +21,9 @@ kotlin {
 
 // Configure project's dependencies
 repositories {
-//    maven {
-//        url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
-//    }
+   maven {
+       url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+   }
     maven {
         url = uri("https://jitpack.io")
     }

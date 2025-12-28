@@ -55,6 +55,11 @@ class GiteaSettingsConfigurable internal constructor(private val project: Projec
                     settings::isCloneGitUsingSsh, settings::setCloneGitUsingSsh
                 )
             }
+            row(GiteaBundle.message("settings.repos.per.page")) {
+                intTextField(range = 1..50).columns(2).bindIntText({ settings.getReposPerPage() }, {
+                    settings.setReposPerPage(it)
+                }).gap(RightGap.SMALL)
+            }
             row(GiteaBundle.message("settings.timeout")) {
                 intTextField(range = 0..60).columns(2).bindIntText({ settings.getConnectionTimeout() / 1000 }, {
                     settings.setConnectionTimeout(it * 1000)

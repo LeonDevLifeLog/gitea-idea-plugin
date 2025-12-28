@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+- Fix: action runner error.
+
+## [0.5.2] - 2025-10-14
+
+### Added
+
+- Support IntelliJ idea 2025.x
+ 
 ## [0.5.1] - 2024-11-29
 
 - Support IntelliJ idea 2024.3
