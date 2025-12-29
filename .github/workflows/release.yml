@@ -12,7 +12,7 @@ jobs:
   # Prepare and publish the plugin to JetBrains Marketplace repository
   release:
     name: Publish Plugin
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
