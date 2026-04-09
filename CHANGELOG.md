@@ -4,7 +4,7 @@
 
 ## [Unreleased]
 
-- Support IntelliJ idea 2025.x
+- Support IntelliJ idea 2026.x
 
 ## [0.5.4] - 2025-10-14
 
