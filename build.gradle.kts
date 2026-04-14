@@ -38,7 +38,7 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     testImplementation(libs.junit)
-    implementation("org.codeberg.gitnex:tea4j-autodeploy:0be0b407b2")
+    implementation("org.codeberg.gitnex:tea4j-autodeploy:439c7c4c1d")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
