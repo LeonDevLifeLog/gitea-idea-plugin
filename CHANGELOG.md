@@ -2,7 +2,7 @@
 
 # Gitea Changelog
 
-## [Unreleased]
+## [0.7.0] - 2026-04-14
 
 - Support IntelliJ IDEA 2026.1
 
