@@ -21,13 +21,13 @@ kotlin {
 
 // Configure project's dependencies
 repositories {
-   maven {
-       url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
-   }
     maven {
         url = uri("https://jitpack.io")
     }
     mavenCentral()
+    maven {
+        url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+    }
 
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
