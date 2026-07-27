@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Supports new versions of JetBrains IDEs.
+
 ## [0.8.0] - 2026-07-27
 
 - Supports new versions of JetBrains IDEs.
