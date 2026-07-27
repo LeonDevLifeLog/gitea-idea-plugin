@@ -4,7 +4,9 @@
 
 ## [Unreleased]
 
-- Support IntelliJ IDEA 2026.x
+## [0.8.0] - 2026-07-27
+
+- Supports new versions of JetBrains IDEs.
 
 ## [0.7.0] - 2026-05-05
 
@@ -104,7 +106,8 @@
 
 - Support Gitea Task(Issue) manager
 
-[Unreleased]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/0.5.4...0.7.0
 [0.5.4]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/0.5.2...0.5.4
 [0.5.2]: https://github.com/LeonDevLifeLog/gitea-idea-plugin/compare/0.5.1...0.5.2
