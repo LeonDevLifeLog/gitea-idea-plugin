@@ -9,7 +9,6 @@ import com.github.leondevlifelog.gitea.GiteaBundle
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccount
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountManager
 import com.github.leondevlifelog.gitea.ui.GiteaLoginPanel
-import com.intellij.ide.IdeBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -58,7 +57,7 @@ internal class CloneDialogLoginPanel(private val account: GiteaAccount?) :
     }
     private val inlineCancelPanel = simplePanel()
     private val loginButton = JButton(GiteaBundle.message("clone.dialog.button.login.mnemonic"))
-    private val backLink = LinkLabel<Any?>(IdeBundle.message("button.back"), null).apply {
+    private val backLink = LinkLabel<Any?>(GiteaBundle.message("button.back"), null).apply {
         verticalAlignment = SwingConstants.CENTER
     }
 
@@ -111,7 +110,7 @@ internal class CloneDialogLoginPanel(private val account: GiteaAccount?) :
 
     private fun setupNewUi(isOAuth: Boolean) {
         loginButton.isVisible = !isOAuth
-        backLink.text = if (isOAuth) IdeBundle.message("link.cancel") else IdeBundle.message("button.back")
+        backLink.text = if (isOAuth) GiteaBundle.message("link.cancel") else GiteaBundle.message("button.back")
 
         loginPanel.footer =
             { if (!isOAuth) buttonPanel() } // footer is used to put buttons in 2-nd column - align under text boxes
