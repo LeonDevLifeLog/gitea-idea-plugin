@@ -10,6 +10,7 @@ import com.intellij.tasks.config.BaseRepositoryEditor;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.FormBuilder;
@@ -27,7 +28,7 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
     private final Project project;
     private MyTextField myRepoAuthor;
     private MyTextField myRepoName;
-    private MyTextField myToken;
+    private JBPasswordField myToken;
     private JBCheckBox myShowNotAssignedIssues;
     private JButton myTokenButton;
     private JBLabel myHostLabel;
@@ -86,7 +87,8 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
         myRepoPanel.add(myRepoName, bag.next());
 
         myTokenLabel = new JBLabel(GiteaBundle.message("task.repo.token.field"), SwingConstants.RIGHT);
-        myToken = new MyTextField(GiteaBundle.message("task.repo.token.field.empty.hint"));
+        myToken = new JBPasswordField();
+        myToken.getEmptyText().setText(GiteaBundle.message("task.repo.token.field.empty.hint"));
         myTokenButton = new JButton(GiteaBundle.message("task.repo.token.create.button"));
         myTokenButton.addActionListener(e -> {
             String urlText = myURLText.getText();
@@ -128,11 +130,16 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
     }
 
     private void updateTokenButton() {
-        if (StringUtil.isEmptyOrSpaces(getHost()) || StringUtil.isEmptyOrSpaces(getRepoAuthor()) || StringUtil.isEmptyOrSpaces(getRepoName())) {
-            myTokenButton.setEnabled(false);
-        } else {
-            myTokenButton.setEnabled(true);
+        boolean validHost = false;
+        if (!StringUtil.isEmptyOrSpaces(getHost())) {
+            try {
+                GiteaServerPath.from(getHost());
+                validHost = true;
+            } catch (RuntimeException ignored) {
+                // Keep the token action disabled until the server URL is valid.
+            }
         }
+        myTokenButton.setEnabled(validHost && !StringUtil.isEmptyOrSpaces(getRepoAuthor()) && !StringUtil.isEmptyOrSpaces(getRepoName()));
     }
 
     @NotNull
@@ -152,7 +159,7 @@ class GiteaRepositoryEditor extends BaseRepositoryEditor<GiteaRepository> {
 
     @NotNull
     private String getToken() {
-        return myToken.getText().trim();
+        return new String(myToken.getPassword()).trim();
     }
 
     private boolean isAssignedIssuesOnly() {

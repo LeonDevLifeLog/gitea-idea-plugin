@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import java.net.MalformedURLException
 import java.net.URI
-import java.net.URL
+import java.net.URISyntaxException
 
 
 /**
@@ -33,11 +33,52 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) :
         @JvmStatic
         fun from(url: String): GiteaServerPath {
             try {
-                val instanceUrl = URL(url)
+                val instanceUrl = URI(url).toURL()
+                if (instanceUrl.protocol != URLUtil.HTTP_PROTOCOL && instanceUrl.protocol != URLUtil.HTTPS_PROTOCOL) {
+                    throw GiteaParseException()
+                }
                 return GiteaServerPath(
-                    instanceUrl.protocol == URLUtil.HTTP_PROTOCOL, instanceUrl.host, instanceUrl.port, instanceUrl.path
+                    instanceUrl.protocol == URLUtil.HTTP_PROTOCOL,
+                    instanceUrl.host,
+                    instanceUrl.port,
+                    instanceUrl.path.trim('/').takeIf { it.isNotEmpty() }?.let { "/$it" },
                 )
             } catch (e: MalformedURLException) {
+                throw GiteaParseException()
+            } catch (e: URISyntaxException) {
+                throw GiteaParseException()
+            } catch (e: IllegalArgumentException) {
+                throw GiteaParseException()
+            }
+        }
+
+        /**
+         * Creates a server path from an HTTP(S) Git remote URL while preserving an optional
+         * Gitea installation path prefix and removing the owner/repository suffix.
+         */
+        @Throws(GiteaParseException::class)
+        @JvmStatic
+        fun fromRemoteUrl(url: String): GiteaServerPath {
+            try {
+                val remoteUrl = URI(url).toURL()
+                if (remoteUrl.protocol != URLUtil.HTTP_PROTOCOL && remoteUrl.protocol != URLUtil.HTTPS_PROTOCOL) {
+                    throw GiteaParseException()
+                }
+                val pathSegments = remoteUrl.path.trim('/').split('/').filter { it.isNotEmpty() }
+                if (pathSegments.size < 2) throw GiteaParseException()
+
+                val serverPath = pathSegments.dropLast(2).takeIf { it.isNotEmpty() }?.joinToString("/", prefix = "/")
+                return GiteaServerPath(
+                    remoteUrl.protocol == URLUtil.HTTP_PROTOCOL,
+                    remoteUrl.host,
+                    remoteUrl.port,
+                    serverPath,
+                )
+            } catch (e: MalformedURLException) {
+                throw GiteaParseException()
+            } catch (e: URISyntaxException) {
+                throw GiteaParseException()
+            } catch (e: IllegalArgumentException) {
                 throw GiteaParseException()
             }
         }
@@ -109,7 +150,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) :
         other as GiteaServerPath
 
         if (myUseHttp != other.myUseHttp) return false
-        if (myHost != other.myHost) return false
+        if (!myHost.equals(other.myHost, ignoreCase = true)) return false
         if (myPort != other.myPort) return false
         if (myPath != other.myPath) return false
 
@@ -125,7 +166,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) :
         if (!ignoreProtocol) {
             if (myUseHttp != other.myUseHttp) return false
         }
-        if (myHost != other.myHost) return false
+        if (!myHost.equals(other.myHost, ignoreCase = true)) return false
         if (myPort != other.myPort) return false
         if (myPath != other.myPath) return false
 
@@ -134,7 +175,7 @@ class GiteaServerPath(usHttp: Boolean, host: String, port: Int, path: String?) :
 
     override fun hashCode(): Int {
         var result = myUseHttp.hashCode()
-        result = 31 * result + myHost.hashCode()
+        result = 31 * result + myHost.lowercase().hashCode()
         result = 31 * result + myPort
         result = 31 * result + myPath.hashCode()
         return result

@@ -4,6 +4,32 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Support IntelliJ IDEA 2026.3.
+- Allow SSH ports from 1 to 65535 in the settings.
+
+### Removed
+
+- Remove inactive protected-branch and application-activation extension registrations.
+
+### Fixed
+
+- Send task API tokens in the authorization header instead of URL query parameters.
+- Send the Basic and token authorization headers on every API request.
+- Select Git HTTP credentials only from accounts matching the requested server.
+- Prevent duplicate account creation during login.
+- Make the login field editable only when no login is preset.
+- Preserve Gitea installation path prefixes when parsing repository remote URLs.
+- Correct clone repository list events and loading-state thread handling.
+- Apply closed-issue filtering and the configured connection timeout, falling back to the default when it is 0.
+- Handle Gitea API authentication, server and empty-response errors explicitly.
+- Filter task results with the supported `assigned_by`, `state` and `type` parameters.
+- Mask task access tokens and validate that replacement tokens belong to the expected account.
+- Replace deprecated future-based repository and avatar loading with coroutine scopes.
+- Treat empty and relative server URLs as validation errors instead of crashing the login dialog.
+- Open the login dialog with an empty server when a Git remote URL cannot be parsed.
+
 ## [0.9.0] - 2026-08-02
 
 - Supports new versions of JetBrains IDEs.

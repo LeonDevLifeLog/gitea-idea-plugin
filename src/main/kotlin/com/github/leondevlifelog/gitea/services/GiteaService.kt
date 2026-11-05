@@ -18,6 +18,6 @@ import com.github.leondevlifelog.gitea.api.GiteaApi
 @Service(Service.Level.PROJECT)
 class GiteaService(private val project: Project) {
     fun getGiteaApi(baseUrl:String,token:String): GiteaApi {
-        return GiteaApi(baseUrl,token)
+        return GiteaApi(baseUrl, token, GiteaSettings.getInstance().getConnectionTimeout().toLong())
     }
 }

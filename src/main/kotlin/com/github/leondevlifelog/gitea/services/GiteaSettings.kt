@@ -18,7 +18,7 @@ import com.intellij.openapi.components.Storage
 class GiteaSettings : PersistentStateComponent<GiteaSettings.State> {
     private var myState = State()
     fun getGiteaApi(baseUrl: String, token: String): GiteaApi {
-        return GiteaApi(baseUrl, token)
+        return GiteaApi(baseUrl, token, getConnectionTimeout().toLong())
     }
 
     fun getReposPerPage(): Int = myState.REPOS_PER_PAGE

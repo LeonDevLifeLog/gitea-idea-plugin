@@ -20,6 +20,7 @@ import com.intellij.util.xmlb.annotations.Tag
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPatch
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.StringEntity
@@ -27,6 +28,7 @@ import org.gitnex.tea4j.v2.models.AddTimeOption
 import org.gitnex.tea4j.v2.models.EditIssueOption
 import org.gitnex.tea4j.v2.models.Issue
 import org.gitnex.tea4j.v2.models.TrackedTime
+import org.gitnex.tea4j.v2.models.User
 import java.util.concurrent.TimeUnit
 
 /**
@@ -43,6 +45,9 @@ class GiteaRepository : NewBaseRepositoryImpl {
     var assigned = false
 
     var skipSSLVerify = false
+
+    @Transient
+    private var authenticatedLogin: String? = null
 
 
     companion object {
@@ -62,24 +67,31 @@ class GiteaRepository : NewBaseRepositoryImpl {
     }
 
     override fun findTask(id: String): Task? {
+        val issueUrl = getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues", id)
         val issue = httpClient.execute(
-            HttpGet(), TaskResponseUtil.GsonSingleObjectDeserializer<Issue>(GSON, Issue::class.java)
+            authenticated(HttpGet(issueUrl)), TaskResponseUtil.GsonSingleObjectDeserializer<Issue>(GSON, Issue::class.java)
         )
         return GiteaTask(this, issue)
     }
 
     override fun createCancellableConnection(): CancellableConnection? {
         val issueListApi = getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")
-        val url = URIBuilder(issueListApi).addParameter("access_token", password).build()
-        val httpGet = HttpGet(url)
+        val httpGet = authenticated(HttpGet(issueListApi))
         return HttpTestConnection(httpGet)
     }
 
     override fun getIssues(query: String?, offset: Int, limit: Int, withClosed: Boolean): Array<Task> {
-        val uri = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues")).addParameter("q", query)
-            .addParameter("assigned", assigned.toString()).addParameter("page", ((offset / limit) + 1).toString())
-            .addParameter("access_token", password).addParameter("limit", limit.toString()).build()
-        val httpGet = HttpGet(uri)
+        val pageSize = limit.coerceAtLeast(1)
+        val uriBuilder = URIBuilder(getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues"))
+            .addParameter("type", "issues")
+            .addParameter("page", ((offset / pageSize) + 1).toString())
+            .addParameter("state", if (withClosed) "all" else "open")
+            .addParameter("limit", pageSize.toString())
+        if (!query.isNullOrBlank()) uriBuilder.addParameter("q", query)
+        if (assigned) uriBuilder.addParameter("assigned_by", getAuthenticatedLogin())
+
+        val uri = uriBuilder.build()
+        val httpGet = authenticated(HttpGet(uri))
         val issues = httpClient.execute(
             httpGet, TaskResponseUtil.GsonMultipleObjectsDeserializer<Issue>(GSON, LIST_OF_ISSUES_TYPE)
         )
@@ -121,8 +133,7 @@ class GiteaRepository : NewBaseRepositoryImpl {
 
     override fun updateTimeSpent(task: LocalTask, timeSpent: String, comment: String) {
         val issueTrackedTimeUrl = getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues", task.id, "times")
-        val url = URIBuilder(issueTrackedTimeUrl).addParameter("access_token", password).build()
-        val httpPost = HttpPost(url)
+        val httpPost = authenticated(HttpPost(issueTrackedTimeUrl))
         val addTimeOption = AddTimeOption()
         val matcher = TIME_SPENT_PATTERN.matcher(timeSpent)
         if (!matcher.find()) {
@@ -142,8 +153,7 @@ class GiteaRepository : NewBaseRepositoryImpl {
 
     override fun setTaskState(task: Task, state: CustomTaskState) {
         val updateTaskState = getRestApiUrl("repos", "$repoAuthor", "$repoName", "issues", task.id)
-        val url = URIBuilder(updateTaskState).addParameter("access_token", password).build()
-        val httpPatch = HttpPatch(url)
+        val httpPatch = authenticated(HttpPatch(updateTaskState))
         val editIssueOption = EditIssueOption()
         editIssueOption.state = state.id
         httpPatch.entity = StringEntity(GSON.toJson(editIssueOption), ContentType.APPLICATION_JSON)
@@ -162,5 +172,21 @@ class GiteaRepository : NewBaseRepositoryImpl {
 
     override fun isUseHttpAuthentication(): Boolean {
         return true
+    }
+
+    private fun <T : HttpRequestBase> authenticated(request: T): T {
+        request.setHeader("Authorization", "token $password")
+        return request
+    }
+
+    private fun getAuthenticatedLogin(): String {
+        authenticatedLogin?.let { return it }
+        val user = httpClient.execute(
+            authenticated(HttpGet(getRestApiUrl("user"))),
+            TaskResponseUtil.GsonSingleObjectDeserializer<User>(GSON, User::class.java),
+        )
+        return user.login?.takeIf { it.isNotBlank() }
+            ?.also { authenticatedLogin = it }
+            ?: throw IllegalStateException("Gitea API returned a user without a login")
     }
 }

@@ -70,6 +70,7 @@ import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.JSeparator
 import javax.swing.ListModel
+import javax.swing.SwingUtilities
 import javax.swing.event.DocumentEvent
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
@@ -132,14 +133,23 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
                 updateSelectedUrl()
             }
         }
-        //TODO: fix jumping selection in the presence of filter
         loader.addLoadingStateListener {
             repositoryList.setPaintBusy(loader.loading)
         }
 
         searchField = SearchTextField(false).also {
             it.addDocumentListener(object : DocumentAdapter() {
-                override fun textChanged(e: DocumentEvent) = updateSelectedUrl()
+                override fun textChanged(e: DocumentEvent) {
+                    val selectedItem = repositoryList.selectedValue
+                    SwingUtilities.invokeLater {
+                        if (selectedItem != null) {
+                            val selectedIndex = (0 until repositoryList.model.size)
+                                .firstOrNull { index -> repositoryList.model.getElementAt(index) == selectedItem }
+                            if (selectedIndex != null) repositoryList.selectedIndex = selectedIndex
+                        }
+                        updateSelectedUrl()
+                    }
+                }
             })
             createFocusFilterFieldAction(it)
         }
@@ -191,7 +201,7 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
 
         override fun getPresentableText(error: Throwable): @Nls String = when (error) {
             is GiteaMissingTokenException -> GiteaBundle.message("account.token.missing")
-            is GiteaAuthenticationException -> GiteaBundle.message("credentials.invalid.auth.data", error.message)
+            is GiteaAuthenticationException -> GiteaBundle.message("credentials.invalid.auth.data", error.message.orEmpty())
             else -> GiteaBundle.message("clone.error.load.repositories")
         }
 
@@ -283,7 +293,15 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
         } ?: emptyList()
 
     override fun doClone(checkoutListener: CheckoutProvider.Listener) {
-        val parent = Paths.get(directoryField.text).toAbsolutePath().parent
+        val parent = Paths.get(directoryField.text).toAbsolutePath().parent ?: run {
+            GiteaNotifications.showError(
+                project,
+                GiteaNotificationIdsHolder.CLONE_UNABLE_TO_FIND_DESTINATION,
+                GiteaBundle.message("clone.dialog.clone.failed"),
+                GiteaBundle.message("clone.dialog.error.unable.to.find.destination.directory"),
+            )
+            return
+        }
         val destinationValidation = CloneDvcsValidationUtils.createDestination(parent.toString())
         if (destinationValidation != null) {
             LOG.error(GiteaBundle.message("clone.dialog.error.unable.to.create.destination.directory"),
@@ -359,12 +377,12 @@ public abstract class GiteaCloneDialogExtensionComponentBase(
             .trim()
 
         try {
-            val serverPath = GiteaServerPath.from(url)
+            val serverPath = GiteaServerPath.fromRemoteUrl(url)
 
             val githubFullPath = GiteaUrlUtil.getUserAndRepositoryFromRemoteUrl(url) ?: return null
             return GiteaRepositoryCoordinates(serverPath, githubFullPath)
         }
-        catch (e: Throwable) {
+        catch (e: Exception) {
             return null
         }
     }

@@ -7,6 +7,7 @@ package com.github.leondevlifelog.gitea.ui
 
 import com.github.leondevlifelog.gitea.GiteaBundle.message
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath
+import com.github.leondevlifelog.gitea.api.executeBody
 import com.github.leondevlifelog.gitea.exception.GiteaAuthenticationException
 import com.github.leondevlifelog.gitea.exception.GiteaParseException
 import com.github.leondevlifelog.gitea.exception.LoginNotUniqueException
@@ -55,6 +56,11 @@ internal class GiteaTokenCredentialsUi(
         withContext(Dispatchers.Main.immediate) {
             val token = String(tokenTextField.password)
             val login = acquireLogin(server, token, isAccountUnique)
+            fixedLogin?.let { expectedLogin ->
+                if (login != expectedLogin) {
+                    throw GiteaAuthenticationException(message("credentials.token.login.mismatch", login, expectedLogin))
+                }
+            }
             login to token
         }
 
@@ -80,8 +86,8 @@ internal class GiteaTokenCredentialsUi(
         ): String {
             val details = withContext(Dispatchers.IO) {
                 val service = service<GiteaSettings>()
-                service.getGiteaApi(server.toString(), token).getUserApi().userGetCurrent().execute().body()
-            } ?: throw GiteaAuthenticationException("Token is invalid")
+                service.getGiteaApi(server.toString(), token).getUserApi().userGetCurrent().executeBody()
+            }
             if (!isAccountUnique(details.login, server)) throw LoginNotUniqueException(details.login)
             return details.login
         }

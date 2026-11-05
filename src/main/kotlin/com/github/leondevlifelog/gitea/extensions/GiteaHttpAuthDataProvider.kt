@@ -10,7 +10,9 @@ import com.github.leondevlifelog.gitea.authentication.GiteaAccountsUtil
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccount
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountDetail
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountManager
-import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath.Companion.from
+import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath.Companion.fromRemoteUrl
+import com.github.leondevlifelog.gitea.api.executeBody
+import com.github.leondevlifelog.gitea.exception.GiteaParseException
 import com.github.leondevlifelog.gitea.services.GiteaSettings
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
@@ -48,14 +50,18 @@ class GiteaHttpAuthDataProvider : GitHttpAuthDataProvider {
         return withContext(Dispatchers.EDT + ModalityState.any().asContextElement()) {
             when (accountsWithTokens.size) {
                 0 -> {
-                    GiteaAccountsUtil.requestNewAccount(from(url), login, project)
+                    val server = try {
+                        fromRemoteUrl(url)
+                    } catch (_: GiteaParseException) {
+                        null
+                    }
+                    GiteaAccountsUtil.requestNewAccount(server, login, project)
                 }
 
                 1 -> {
-                    val account = GiteaAccountsUtil.getSingleOrDefaultAccount(project) ?: return@withContext null
-                    GiteaAccountAuthData(
-                        account, ACCESS_TOKEN_AUTH, accountManager.findCredentials(account) ?: return@withContext null
-                    )
+                    val (account, storedToken) = accountsWithTokens.entries.single()
+                    val token = storedToken ?: GiteaAccountsUtil.requestNewToken(account, project) ?: return@withContext null
+                    GiteaAccountAuthData(account, ACCESS_TOKEN_AUTH, token)
                 }
 
                 else -> {
@@ -77,8 +83,7 @@ class GiteaHttpAuthDataProvider : GitHttpAuthDataProvider {
 
         suspend fun getAccountDetails(acc: GiteaAccount, token: String): GiteaAccountDetail? {
             val user = service<GiteaSettings>().getGiteaApi(acc.server.toString(), token).getUserApi().userGetCurrent()
-                .execute()
-                .body() ?: return null
+                .executeBody()
             return GiteaAccountDetail(user.avatarUrl, user.loginName)
         }
     }

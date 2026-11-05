@@ -5,5 +5,4 @@
 
 package com.github.leondevlifelog.gitea.exception
 
-class GiteaAuthenticationException(override val message:String):RuntimeException() {
-}
+class GiteaAuthenticationException(message: String) : RuntimeException(message)

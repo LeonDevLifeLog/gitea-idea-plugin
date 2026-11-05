@@ -6,30 +6,30 @@
 package com.github.leondevlifelog.gitea.services
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
-import com.intellij.collaboration.util.ProgressIndicatorsProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.LowMemoryWatcher
 import com.intellij.util.ImageLoader
 import com.intellij.util.ui.ImageUtil
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.future.future
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.net.URL
+import java.net.URI
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
 class CachingGiteaUserAvatarLoader : Disposable {
 
-    private val indicatorProvider = ProgressIndicatorsProvider().also {
-        Disposer.register(this, it)
-    }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val avatarCache = Caffeine.newBuilder().expireAfterAccess(Duration.of(5, ChronoUnit.MINUTES))
         .build<String, CompletableFuture<Image?>>()
@@ -39,25 +39,30 @@ class CachingGiteaUserAvatarLoader : Disposable {
     }
 
     fun requestAvatar(url: String): CompletableFuture<Image?> = avatarCache.get(url) {
-        ProgressManager.getInstance().submitIOTask(indicatorProvider) { loadAndDownscale(it, url, STORED_IMAGE_SIZE) }
+        scope.future {
+            ensureActive()
+            loadAndDownscale(url, STORED_IMAGE_SIZE)
+        }
     }
 
-    private fun loadAndDownscale(
-        indicator: ProgressIndicator, url: String, maximumSize: Int
-    ): Image? {
+    private fun loadAndDownscale(url: String, maximumSize: Int): Image? {
         try {
-            val loadedImage = ImageLoader.loadFromUrl(URL(url)) ?: return null
+            val loadedImage = ImageLoader.loadFromUrl(URI(url).toURL()) ?: return null
             return if (ImageUtil.getUserWidth(loadedImage) <= maximumSize && ImageUtil.getUserHeight(loadedImage) <= maximumSize) loadedImage
             else ImageLoader.scaleImage(loadedImage, maximumSize) as BufferedImage
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: ProcessCanceledException) {
             return null
         } catch (e: Exception) {
-            LOG.debug("Error loading image from $url", e)
+            LOG.debug("Error loading Gitea avatar", e)
             return null
         }
     }
 
-    override fun dispose() {}
+    override fun dispose() {
+        scope.cancel()
+    }
 
     companion object {
         private val LOG = logger<CachingGiteaUserAvatarLoader>()

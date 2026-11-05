@@ -107,7 +107,7 @@ object GiteaAccountsUtil {
         val model = AccountManagerLoginModel()
         login(
             model,
-            GiteaLoginRequest(server = server, login = login, isLoginEditable = login != null),
+            GiteaLoginRequest(server = server, login = login, isLoginEditable = login == null),
             project,
             parentComponent
         )
