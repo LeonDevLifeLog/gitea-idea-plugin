@@ -19,7 +19,7 @@ class AccessTokenAuth(private val token: String) : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val newRequest = chain.request().newBuilder().addHeader(AUTHORIZATION, "token $token").build()
+        val newRequest = chain.request().newBuilder().header(AUTHORIZATION, "token $token").build()
         return chain.proceed(newRequest)
     }
 }

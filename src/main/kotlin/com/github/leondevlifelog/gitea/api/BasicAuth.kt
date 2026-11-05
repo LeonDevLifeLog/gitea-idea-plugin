@@ -18,7 +18,7 @@ import okhttp3.Response
 class BasicAuth(private val username: String, private val password: String) : Interceptor {
     private val credential = Credentials.basic(username, password)
     override fun intercept(chain: Interceptor.Chain): Response {
-        chain.request().newBuilder().addHeader(AccessTokenAuth.AUTHORIZATION, credential)
-        return chain.proceed(chain.request())
+        val newRequest = chain.request().newBuilder().header(AccessTokenAuth.AUTHORIZATION, credential).build()
+        return chain.proceed(newRequest)
     }
 }

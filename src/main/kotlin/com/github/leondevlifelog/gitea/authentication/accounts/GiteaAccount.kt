@@ -16,7 +16,7 @@ import org.jetbrains.annotations.VisibleForTesting
 @Tag("account")
 class GiteaAccount(
     @set:Transient
-    @NlsSafe
+    @get:NlsSafe
     @Attribute("name")
     override var name: String = "",
     @Property(style = Property.Style.ATTRIBUTE, surroundWithTag = false)

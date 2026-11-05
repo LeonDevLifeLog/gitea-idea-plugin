@@ -61,7 +61,9 @@ internal class GiteaCloneDialogRepositoryListModel : AbstractListModel<GiteaRepo
         repositoriesByAccount.remove(account)
         val (startOffset, endOffset) = findAccountOffsets(account) ?: return
         itemsByAccount.remove(account)
-        fireIntervalRemoved(this, startOffset, endOffset)
+        if (startOffset < endOffset) {
+            fireIntervalRemoved(this, startOffset, endOffset - 1)
+        }
     }
 
     fun setError(account: GiteaAccount, error: Throwable) {
@@ -69,8 +71,7 @@ internal class GiteaCloneDialogRepositoryListModel : AbstractListModel<GiteaRepo
         val (startOffset, endOffset) = findAccountOffsets(account) ?: return
         val errorItem = GiteaRepositoryListItem.Error(account, error)
         accountItems.add(0, errorItem)
-        fireIntervalAdded(this, endOffset, endOffset + 1)
-        fireContentsChanged(this, startOffset, endOffset + 1)
+        fireIntervalAdded(this, startOffset, startOffset)
     }
 
     /**
@@ -88,15 +89,19 @@ internal class GiteaCloneDialogRepositoryListModel : AbstractListModel<GiteaRepo
             val item = GiteaRepositoryListItem.Repo(account, details, repo)
             val isNew = repoSet.add(repo)
             if (!isNew) {
-                val idx = items.indexOf(item)
-                items.removeAt(idx)
-                fireIntervalRemoved(this, startOffset + idx, startOffset + idx)
-                endOffset--
+                val idx = items.indexOfFirst { it is GiteaRepositoryListItem.Repo && it.repo == repo }
+                if (idx >= 0) {
+                    items.removeAt(idx)
+                    fireIntervalRemoved(this, startOffset + idx, startOffset + idx)
+                    endOffset--
+                }
             }
             toAdd.add(item)
         }
         items.addAll(toAdd)
-        fireIntervalAdded(this, endOffset, endOffset + toAdd.size)
+        if (toAdd.isNotEmpty()) {
+            fireIntervalAdded(this, endOffset, endOffset + toAdd.size - 1)
+        }
     }
 
     private fun findAccountOffsets(account: GiteaAccount): Pair<Int, Int>? {

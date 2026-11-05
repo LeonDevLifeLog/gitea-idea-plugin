@@ -25,7 +25,7 @@ New feature coming soon:
         <applicationService
             serviceImplementation="com.github.leondevlifelog.gitea.services.CachingGiteaUserAvatarLoader" />
 
-        <projectConfigurable parentId="project.propVCSSupport.Mappings" groupWeight="-500"
+        <projectConfigurable parentId="project.propVCSSupport.Mappings" groupWeight="-500" displayName="Gitea"
             instance="com.github.leondevlifelog.gitea.ui.GiteaSettingsConfigurable" />
         <applicationService
             serviceImplementation="com.github.leondevlifelog.gitea.authentication.accounts.GiteaPersistentAccounts" />
@@ -37,13 +37,5 @@ New feature coming soon:
 
         <gitRepositoryHostingService
             implementation="com.github.leondevlifelog.gitea.extensions.GiteaRepositoryHostingService" />
-        <gitProtectedBranchProvider
-            implementation="com.github.leondevlifelog.gitea.extensions.GiteaProtectedBranchProvider" />
-        <gitFetchHandler implementation="com.github.leondevlifelog.gitea.extensions.GiteaProtectedBranchRulesLoader" />
     </extensions>
-
-    <applicationListeners>
-        <listener class="com.github.leondevlifelog.gitea.listeners.GiteaActivationListener"
-            topic="com.intellij.openapi.application.ApplicationActivationListener" />
-    </applicationListeners>
 </idea-plugin>

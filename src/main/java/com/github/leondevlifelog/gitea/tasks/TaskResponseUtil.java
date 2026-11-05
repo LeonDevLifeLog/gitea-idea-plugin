@@ -18,6 +18,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -48,9 +50,9 @@ public final class TaskResponseUtil {
     }
 
     public static Reader getResponseContentAsReader(@NotNull HttpResponse response) throws IOException {
-        Header header = response.getEntity().getContentEncoding();
-        Charset charset = header == null ? DEFAULT_CHARSET : Charset.forName(header.getValue());
-        return new InputStreamReader(response.getEntity().getContent(), charset);
+        if (response.getEntity() == null) return new StringReader("");
+        Charset charset = ContentType.getOrDefault(response.getEntity()).getCharset();
+        return new InputStreamReader(response.getEntity().getContent(), charset == null ? DEFAULT_CHARSET : charset);
     }
 
     public static String getResponseContentAsString(@NotNull HttpResponse response) throws IOException {
@@ -205,7 +207,7 @@ public final class TaskResponseUtil {
                 }
             } catch (JsonSyntaxException e) {
                 LOG.warn("Malformed server response", e);
-                return myFallbackValue.produce();
+                throw new IOException("Malformed server response", e);
             }
         }
     }

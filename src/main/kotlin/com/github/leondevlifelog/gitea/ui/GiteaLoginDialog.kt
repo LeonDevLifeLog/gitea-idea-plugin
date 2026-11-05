@@ -6,11 +6,9 @@
 package com.github.leondevlifelog.gitea.ui
 
 import com.github.leondevlifelog.gitea.GiteaBundle
-import com.github.leondevlifelog.gitea.authentication.accounts.GiteaAccountManager
 import com.github.leondevlifelog.gitea.authentication.accounts.GiteaServerPath
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.DialogWrapper.IS_VISUAL_PADDING_COMPENSATED_ON_COMPONENT_LEVEL_KEY
@@ -58,9 +56,6 @@ internal sealed class GiteaLoginDialog(
         cs.launch(Dispatchers.Main.immediate + ModalityState.stateForComponent(rootPane).asContextElement()) {
             try {
                 val (login, token) = loginPanel.acquireLoginAndToken()
-                val accountManager = service<GiteaAccountManager>()
-                val acc = GiteaAccountManager.createAccount(login, loginPanel.getServer())
-                accountManager.updateAccount(acc, token)
                 model.saveLogin(loginPanel.getServer(), login, token)
                 close(OK_EXIT_CODE, true)
             } catch (e: Exception) {

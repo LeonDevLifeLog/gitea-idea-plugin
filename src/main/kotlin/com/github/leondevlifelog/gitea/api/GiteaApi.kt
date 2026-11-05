@@ -12,6 +12,7 @@ import org.gitnex.tea4j.v2.apis.RepositoryApi
 import org.gitnex.tea4j.v2.apis.UserApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 /**
  * Gitea Api
@@ -26,9 +27,9 @@ class GiteaApi {
      * @param token Access Token
      * @see AccessTokenAuth
      */
-    constructor(baseUrl: String, token: String) {
-        retrofit = Retrofit.Builder().baseUrl("$baseUrl/api/v1/").client(
-            OkHttpClient.Builder().sslSocketFactory(
+    constructor(baseUrl: String, token: String, connectionTimeoutMs: Long = DEFAULT_CONNECTION_TIMEOUT_MS) {
+        retrofit = Retrofit.Builder().baseUrl(normalizeGiteaApiBaseUrl(baseUrl)).client(
+            httpClientBuilder(connectionTimeoutMs).sslSocketFactory(
                 CertificateManager.getInstance().sslContext.socketFactory, CertificateManager.getInstance().trustManager
             ).addInterceptor(AccessTokenAuth(token)).build()
         ).addConverterFactory(GsonConverterFactory.create()).build()
@@ -40,9 +41,14 @@ class GiteaApi {
      * @param password Password
      * @see BasicAuth
      */
-    constructor(baseUrl: String, username: String, password: String) {
-        retrofit = Retrofit.Builder().baseUrl(baseUrl).client(
-            OkHttpClient.Builder().sslSocketFactory(
+    constructor(
+        baseUrl: String,
+        username: String,
+        password: String,
+        connectionTimeoutMs: Long = DEFAULT_CONNECTION_TIMEOUT_MS,
+    ) {
+        retrofit = Retrofit.Builder().baseUrl(normalizeGiteaApiBaseUrl(baseUrl)).client(
+            httpClientBuilder(connectionTimeoutMs).sslSocketFactory(
                 CertificateManager.getInstance().sslContext.socketFactory, CertificateManager.getInstance().trustManager
             ).addInterceptor(BasicAuth(username, password)).build()
         ).addConverterFactory(GsonConverterFactory.create()).build()
@@ -58,5 +64,18 @@ class GiteaApi {
 
     fun getRepoApi(): RepositoryApi {
         return retrofit.create(RepositoryApi::class.java)
+    }
+
+    private companion object {
+        const val DEFAULT_CONNECTION_TIMEOUT_MS = 5_000L
+
+        fun httpClientBuilder(timeoutMs: Long): OkHttpClient.Builder {
+            // OkHttp a 0-t végtelen időtúllépésként kezeli
+            val timeout = if (timeoutMs > 0) timeoutMs else DEFAULT_CONNECTION_TIMEOUT_MS
+            return OkHttpClient.Builder()
+                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+        }
     }
 }

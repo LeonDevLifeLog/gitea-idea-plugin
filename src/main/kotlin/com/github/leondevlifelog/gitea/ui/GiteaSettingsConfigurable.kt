@@ -46,7 +46,7 @@ class GiteaSettingsConfigurable internal constructor(private val project: Projec
                 panelFactory.accountsPanelCell(this, detailsProvider, actionsController).align(Align.FILL)
             }.resizableRow()
             row(GiteaBundle.message("settings.ssh.port")) {
-                intTextField(range = 22..65535).columns(2).bindIntText({ settings.getSshPort() }, {
+                intTextField(range = 1..65535).columns(2).bindIntText({ settings.getSshPort() }, {
                     settings.setSshPort(it)
                 }).gap(RightGap.SMALL)
             }
